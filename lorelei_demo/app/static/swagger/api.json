@@ -1,0 +1,535 @@
+{
+    "swagger": "2.0",
+    "tags": [
+        {
+            "name": "train",
+            "description": "APIs for training models"
+        },
+        {
+            "name": "run",
+            "description": "APIs for testing models."
+        }
+    ],
+    "info": {
+        "title": "ELISA Information Extraction",
+        "description": "APIs for extracting information from text documents in low-resource languages.",
+        "version": "1.0.0"
+    },
+    "host": "0.0.0.0:3300",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/elisa_ie",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/status": {
+            "get": {
+                "summary": "get server status",
+                "description": "returns a list of supported languages and the status of models.",
+                "tags": [
+                    "run",
+                    "train"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns a list of supported languages and the status of models.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Status"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/status/{identifier}": {
+            "get": {
+                "tags": [
+                    "run",
+                    "train"
+                ],
+                "summary": "get server status for a language",
+                "description": "returns the model status for a language.",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "type": "string",
+                        "required": true,
+                        "description": "language code"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns the model status for a language.",
+                        "schema": {
+                            "$ref": "#/definitions/Status"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/train/{identifier}": {
+            "post": {
+                "tags": [
+                    "train"
+                ],
+                "consumes": ["multipart/form-data"],
+                "summary": "train a model",
+                "description": "train a DNN name tagger model for a language",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "description": "language code",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "creator",
+                        "in": "query",
+                        "required": true,
+                        "type": "string",
+                        "description": "name of the user"
+                    },
+                    {
+                        "name": "training_set",
+                        "in": "formData",
+                        "description": "data in CoNLL \"BIO\" format",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "dev_set",
+                        "in": "formData",
+                        "description": "data in CoNLL \"BIO\" format",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "test_set",
+                        "in": "formData",
+                        "description": "data in CoNLL \"BIO\" format",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Model is successfully trained."
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run/{identifier}": {
+            "post": {
+                "tags": [
+                    "run"
+                ],
+                "consumes": ["multipart/form-data"],
+                "summary": "run the information extraction",
+                "description": "returns the ELISA IE result of a text document.",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "description": "language code",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "text",
+                        "in": "formData",
+                        "description": "plain text",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "elisa_xml",
+                        "in": "formData",
+                        "description": "ELISA xml file",
+                        "required": false,
+                        "type": "file"
+                    },
+                    {
+                        "name": "output_format",
+                        "in": "query",
+                        "required": true,
+                        "type": "array",
+                        "items":{
+                            "type":"string",
+                            "enum":["KnowledgeGraph", "EvalTab"],
+                            "default":"KnowledgeGraph"
+                        },
+                        "description":"the format of name tagging result: (1)KnowledgeGraph: a knowledge graph format in JSON. (2) EvalTab: NIST LORELEI evaluation format."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "the format of name tagging result: (1)KnowledgeGraph: a knowledge graph format in JSON. (2) EvalTab: NIST LORELEI evaluation format.",
+                        "schema": {
+                            "$ref": "#/definitions/KnowledgeGraph"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/name_transliteration/{identifier}": {
+            "get": {
+                "tags": ["run"],
+                "summary": "name transliteration",
+                "description": "name transliteration",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "description": "language code",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "name to transliterate",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "name transliteration result in JSON"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/localize/{identifier}": {
+            "get": {
+                "tags": ["run"],
+                "summary": "name localization",
+                "description": "name localization",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "description": "language code",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "name to localize",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "name latitude and longitude in JSON"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "definitions": {
+        "KnowledgeGraph": {
+            "type": "object",
+            "properties": {
+                "attribute": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Attribute"
+                    }
+                },
+                "entity_mention": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EntityMention"
+                    }
+                },
+                "entity": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Entity"
+                    }
+                },
+                "event_mention": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EventMention"
+                    }
+                },
+                "event": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Event"
+                    }
+                },
+                "relation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Relation"
+                    }
+                }
+            }
+        },
+        "Attribute": {
+            "required": [
+                "attribute_id",
+                "attribute_type",
+                "docid:offset",
+                "attribute_head",
+                "attribute_value"
+            ],
+            "type": "object",
+            "properties": {
+                "attribute_id": {
+                    "type": "string"
+                },
+                "attribute_type": {
+                    "type": "string"
+                },
+                "docid:offset": {
+                    "type": "string"
+                },
+                "attribute_head": {
+                    "type": "string"
+                },
+                "attribute_value": {
+                    "type": "string"
+                }
+            }
+        },
+        "EntityMention": {
+            "required": [
+                "mention_id",
+                "docid:offsets",
+                "sentenceid:tokenindexes",
+                "mention_head",
+                "mention_type",
+                "translations",
+                "transliterations"
+            ],
+            "type": "object",
+            "properties": {
+                "mention_id": {
+                    "type": "string"
+                },
+                "docid:offsets": {
+                    "type": "string"
+                },
+                "sentenceid:tokenindexes": {
+                    "type": "string"
+                },
+                "mention_head": {
+                    "type": "string"
+                },
+                "mention_type": {
+                    "type": "string"
+                },
+                "translations": {
+                    "type": "array",
+                    "description": "a list of English translations of the entity mention",
+                    "items": {
+                        "type": "array",
+                        "description": "array of size 2, first element is the translation and the second is confidence score",
+                        "items": {
+                          "type": ["string", "number"]
+                        }
+                    }
+                },
+                "transliterations": {
+                  "description": "a list of English transliterations of the entity mention",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "description": "array of size 2, first element is the transliteration and the second is confidence score",
+                        "items": {
+                          "type": ["string", "number"]
+                        }
+                    }
+                }
+            }
+        },
+        "Entity": {
+            "required": [
+                "entity_id",
+                "entity_type"
+            ],
+            "type": "object",
+            "properties": {
+                "entity_id": {
+                    "type": "string"
+                },
+                "entity_type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "a path of subtypes"
+                },
+                "attributes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Attribute"
+                    }
+                }
+            }
+        },
+        "EventMention": {
+            "required": [
+                "mention_id",
+                "event_offsets",
+                "event_extent",
+                "trigger_offsets",
+                "trigger"
+            ],
+            "type": "object",
+            "properties": {
+                "mention_id": {
+                    "type": "string"
+                },
+                "event_offsets": {
+                    "type": "string"
+                },
+                "event_extent": {
+                    "type": "string"
+                },
+                "trigger_offsets": {
+                    "type": "string"
+                },
+                "trigger": {
+                    "type": "string"
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Attribute"
+                    }
+                }
+            }
+        },
+        "Event": {
+            "required": [
+                "event_id",
+                "event_type"
+            ],
+            "type": "object",
+            "properties": {
+                "event_id": {
+                    "type": "string"
+                },
+                "event_type": {
+                    "type": "string"
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Attribute"
+                    }
+                }
+            }
+        },
+        "Relation": {
+            "required": [
+                "relation_id",
+                "relation_type"
+            ],
+            "type": "object",
+            "properties": {
+                "relation_id": {
+                    "type": "string"
+                },
+                "relation_type": {
+                    "type": "string"
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Attribute"
+                    }
+                }
+            }
+        },
+
+        "Status": {
+            "type": "object",
+            "required": [
+                "identifier",
+                "language",
+                "status"
+            ],
+            "properties": {
+                "identifier": {
+                    "type": "string",
+                    "description": "three letter language code, e.g. eng, chn, hau and etc."
+                },
+                "language": {
+                    "type": "string",
+                    "description": "language of input text document"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "online",
+                        "offline",
+                        "pending"
+                    ],
+                    "description": "1) online: the IE model of the language is ready to use. 2) pending: the IE model of the language is being created, and will be available eventually, either without human intervention, or after some human-in-the-loop interaction. 3) offline: the language is unavailable, and may require human intervention to bring it back online."
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
