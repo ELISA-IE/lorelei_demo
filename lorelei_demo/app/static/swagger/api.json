@@ -2,12 +2,12 @@
     "swagger": "2.0",
     "tags": [
         {
-            "name": "train",
-            "description": "APIs for training models"
-        },
-        {
             "name": "run",
             "description": "APIs for testing models."
+        },
+        {
+            "name": "train",
+            "description": "APIs for training models"
         }
     ],
     "info": {
@@ -15,7 +15,6 @@
         "description": "APIs for extracting information from text documents in low-resource languages.",
         "version": "1.0.0"
     },
-    "host": "0.0.0.0:3300",
     "schemes": [
         "http"
     ],

@@ -26,7 +26,7 @@ bp_api = Blueprint('api', __name__)
 #
 # swagger public APIs
 #
-@bp_api.route("/elisa_ie/swagger", methods=["GET"])
+@bp_api.route("/elisa_ie/api", methods=["GET"])
 @cross_origin()
 def swagger():
     """

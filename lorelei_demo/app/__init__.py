@@ -43,7 +43,9 @@ lorelei_demo_dir = os.path.join(os.path.dirname(lorelei_demo.__file__), '../')
 # register blueprint modules
 #
 # import app modules
-from lorelei_demo.app.api import bp_api as api_module
-
+from lorelei_demo.app.api import bp_api
+from lorelei_demo.app.heatmap import bp_heatmap
 # register app modules
-app.register_blueprint(api_module)
+app.register_blueprint(bp_api)
+app.register_blueprint(bp_heatmap)
+

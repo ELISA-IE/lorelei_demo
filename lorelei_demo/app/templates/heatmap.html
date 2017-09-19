@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ELISA Demo | Heatmap</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename="stylesheets/heatmap/normalize.css") }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename="stylesheets/heatmap/demo.css") }}" rel="stylesheet"/>
+</head>
+<body>
+<div id="main">
+    <div id="header">
+        <div id="header-title">ELISA | Heat Map</div>
+    </div>
+    <div id="map">
+        <div id="map-wrapper"></div>
+        <div id="map-control" class="dark">
+            <div id="map-style">
+                <div id="map-style-label">Map Style:</div>
+                <button class="map-style-toggle" value="streets">Streets</button>
+                <button class="map-style-toggle" value="light">Light</button>
+                <button class="map-style-toggle" value="dark">Dark</button>
+                <button class="map-style-toggle" value="satellite">Satellite</button>
+            </div>
+            <div id="map-topic">
+                <div id="map-topic-label">Topic:</div>
+                <select id="map-topic-select"style="opacity: .6; outline: none;">
+                    <option value="all">All</option>
+                    <option value="Water Supply">Water Supply</option>
+                    <option value="Food Supply">Food Supply</option>
+                    <option value="Medical Assistance">Medical Assistance</option>
+                    <option value="Terrorism or other Extreme Violence">Terrorism or other Extreme Violence</option>
+                    <option value="Utilities, Energy, or Sanitation">Utilities, Energy, or Sanitation</option>
+                    <option value="Evacuation">Evacuation</option>
+                    <option value="Shelter">Shelter</option>
+                    <option value="Search and Rescue">Search and Rescue</option>
+                    <option value="Civil Unrest or Wide-spread Crime">Civil Unrest or Wide-spread Crime</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                </select>
+            </div>
+            <div id="map-language">
+                <div id="map-language-label">Language:</div>
+                <select id="map-language-select" style="opacity: .6; outline: none;">
+                    <option value="all">All</option>
+                    <option value="Amharic">Amharic</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="English">English</option>
+                    <option value="Farsi">Farsi</option>
+                    <option value="Georgian">Georgian</option>
+                    <option value="Hausa">Hausa</option>
+                    <option value="Indonesian">Indonesian</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Khmer">Khmer</option>
+                    <option value="Kurdish">Kurdish</option>
+                    <option value="Lao">Lao</option>
+                    <option value="Nepali">Nepali</option>
+                    <option value="Oromo">Oromo</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Somali">Somali</option>
+                    <option value="Thai">Thai</option>
+                    <option value="Tigrinya">Tigrinya</option>
+                    <option value="Turkish">Turkish</option>
+                    <option value="Ukrainian">Ukrainian</option>
+                    <option value="Urdu">Urdu</option>
+                    <option value="Vietnamese">Vietnamese</option>
+                </select>
+            </div>
+            <div id="map-topic-list">
+                <ul id="topic-list">
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_food.png"></div>
+                        <div class="topic-label">Food Supply</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_water.png"></div>
+                        <div class="topic-label">Water Supply</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_medical.png"></div>
+                        <div class="topic-label">Medical Assistance</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_violence.png"></div>
+                        <div class="topic-label">Terrorism or other Extreme Violence</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_energy.png"></div>
+                        <div class="topic-label">Utilities, Energy, or Sanitation</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_evacuation.png"></div>
+                        <div class="topic-label">Evacuation</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_shelter.png"></div>
+                        <div class="topic-label">Shelter</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_rescue.png"></div>
+                        <div class="topic-label">Search and Rescue</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_crime.png"></div>
+                        <div class="topic-label">Civil Unrest</div>
+                    </li>
+                    <li>
+                        <div class="topic-icon"><img src="/static/images/heatmap/icon_infrastructure.png"></div>
+                        <div class="topic-label">Infrastructure</div>
+                    </li>
+                </ul>
+                <ul id="topic-list">
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(42, 144, 144);"></div>
+                        <div class="topic-label">Amharic</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(0, 164, 127);"></div>
+                        <div class="topic-label">Kurdish</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(246, 244, 1);"></div>
+                        <div class="topic-label">Lao</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(239, 183, 70);"></div>
+                        <div class="topic-label">Oromo</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(178, 122, 10);"></div>
+                        <div class="topic-label">Somali</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(73, 165, 165);"></div>
+                        <div class="topic-label">Tigrinya</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(228, 0, 69);"></div>
+                        <div class="topic-label">Ukrainian</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(215, 188, 0);"></div>
+                        <div class="topic-label">Vietnamese</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="popup">
+{#        <img id="popup-image" src="/static/images/heatmap/figure/figure_demo.jpg">#}
+        <div id="popup-text-wrapper">
+            <div id="popup-text-title"></div>
+            <div id="popup-text-language"></div>
+            <div id="popup-text"></div>
+        </div>
+        <button id="popup-close"></button>
+    </div>
+{#    <div id="info">#}
+{#        <div id="info-topic">#}
+{#            <ul id="info-topic-list">#}
+{#                <li>#}
+{#                    <div class="topic-icon"><img src="/static/images/heatmap/icon_food.png"></div>#}
+{#                    <div class="topic-label">Food Supply</div>#}
+{#                </li>#}
+{#                <li>#}
+{#                    <div class="topic-icon"><img src="/static/images/heatmap/icon_water.png"></div>#}
+{#                    <div class="topic-label">Water Supply</div>#}
+{#                </li>#}
+{#            </ul>#}
+{#        </div>#}
+{#    </div>#}
+    <div id="loading">Loading</div>
+    <div id="footer"></div>
+
+</div>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js"></script>
+<script src="{{ url_for('static', filename="javascripts/heatmap.js") }}"></script>
+
+</body>
+</html>
