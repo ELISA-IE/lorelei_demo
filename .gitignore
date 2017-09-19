@@ -1,7 +1,8 @@
 **/.DS_Store
 **/*.pyc
 .idea/
-data/
+data/name_tagger/
+lorelei_demo/transliteration/data
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template

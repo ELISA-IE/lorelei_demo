@@ -1,0 +1,702 @@
+{
+  "Yunnan": {
+    "center": {
+      "lat": 8.986211,
+      "lng": 38.770577
+    },
+    "language": "Amharic",
+    "sentence": "እጅግ አጣዳፊ ለሆነ የምግብ እጥረት ይጋለጣሉ የተባሉ 320 ሺኽ ሕፃናትን ጨምሮ ከሕዝቡ አርባ ከመቶ የሚሆነው ወይም 5 ሚሊየን ሶማሊያዊያን እርዳታ እንደሚያስፈልጋቸው ድርጅቱ <span style='color:red;font-weight:bold'>አስታውቋል</span>።",
+    "topic": "Water Supply",
+    "incident": "East Africa Drought"
+  },
+  "South_Sudan": {
+    "center": {
+      "lat": 7.512120,
+      "lng": 31.282148
+    },
+    "language": "Amharic",
+    "sentence": "በኢትዮጵያ በአምስት የተለያዩ ክልሎች የደረሰው ድርቅ አሁንም የቦረና እና ጉጂ ዞኖች፣ የሶማሌ ክልል እና በደቡብ ክልል የኮንሶ ወረዳን እያጠቃ መሆኑንና በዚህም በዋነኛነት ከብቶቻቸው ሙሉ ለሙሉ እያለቁባቸው መሆኑን ገለፁ።",
+    "topic": "Food Supply",
+    "incident": "East Africa Drought"
+  },
+  "Bentiu": {
+    "center": {
+      "lat": 9.240081,
+      "lng": 31.282148
+    },
+    "language": "Somali",
+    "sentence": "Soomaaliya ayaa la halgameysa abaaro xun oo saameeyay shacabka Soomaaliyeed. Bilowgi bishaan March, ayaa ra’isul wasaaraha Soomaaliya Xasan Cali Kheyre uu ku dhawaaqay in 110 ruux ay u dhinteen abaarta, taasoo macnaheedu aheyd in dadku ay bilaabeen inay gaajo u dhintaan.",
+    "topic": "Water Supply",
+    "incident": "East Africa Drought"
+  },
+  "Unity": {
+    "center": {
+      "lat": 8.839969,
+      "lng": 29.743478
+    },
+    "language": "Somali",
+    "sentence": "Cabdi Xayir Maareeye, wuxuuse ugu horeyn wax ka weydiiyay waxa ay dowladda Somaliya ka ogtahay duqeyn dhawaan xeebaha Yemen lagu dilay dad Somali ah oo 40 ka badan oo saaraa doon ku sii jeeday dalka Sudan.",
+    "topic": "Water Supply",
+    "incident": "East Africa Drought"
+  },
+  "Nigeria": {
+    "center": {
+      "lat": 1.643561,
+      "lng": 32.427361
+    },
+    "language": "Tigrinya",
+    "sentence": "ኣብ 2016 ዓ.ም ብደርቂ ንዝተጠቕዑ ሰባት ንምሕጋዝ መንግስቲ ልዕሊ 700 ሚልዮን ዶላር ምቕራቡ ይዝከር። ሎሚ ዓመት’ውን ብሪጣንያ ነቲ ዝወሃብ ግብረ መልሲ ውጺኢታዊ ኽከውንን ቀዳምነት ግብረ መልሲ ኣብ ምስላጥን ምስ መንግስቲ ኢትዮጵያ ከምትሰርሕ ሓቢረን።",
+    "topic": "Utilities, Energy, or Sanitation",
+    "incident": "East Africa Drought"
+  },
+  "Jimma": {
+    "center": {
+      "lat": 7.979471,
+      "lng": 36.824123
+    },
+    "language": "Tigrinya",
+    "sentence": "ን7.8 ሚሊዮን ሰባት ዝውዕል ካብ ዝተሓተተ 1.13 ቢሊዮን ዶላር ዛጊት መንግስቲ ካብ ናይ ባዕሉ ባጀትን ካብ ህዝቢ ኢትዮጵያ ዝተኣኻኸቦን ኣስታት 200 ሚሊዮን ዶላር ከምዝመደበን ካብ ለገስቲ ድማ 262 ሚሊዮን ዶላር ከምዝኾነ ብምግላፅ ብድምር 462 ሚሊዮን ዶላር ከምዝተረኽበ እንተኾነ ምስቲ ዝተሓተተ ክነፃፀር ከሎ ኣዚዩ ዝወሓደ ምዃኑን ወሲኾም ገሊፆም።",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "East Africa Drought"
+  },
+  "Zamfara": {
+    "center": {
+      "lat": 5.023867,
+      "lng": 31.638848
+    },
+    "language": "Oromo",
+    "sentence": "Jiraattonni Godina Arsii Lixaa akka ibsantti caamni yeroo mudatu kun kan jalqabaa miti jedhu.",
+    "topic": "Medical Assistance",
+    "incident": "East Africa Drought"
+  },
+  "Jos": {
+    "center": {
+      "lat": 0.560944,
+      "lng": 38.050368
+    },
+    "language": "Oromo",
+    "sentence": "Angawoota godinichaa irraa deebii walii gala argachuuf yaaliin goone garuu hin milkoofne",
+    "topic": "Water Supply",
+    "incident": "East Africa Drought"
+  },
+  "Israel": {
+    "center": {
+      "lat": 11.851523,
+      "lng": 37.406856
+    },
+    "language": "Swahili",
+    "sentence": " Wengi wao wamekwenda kwenye makambi mjini Mogadishu huku wengine wamekimbilia kwenye makambi ya wakimbizi ambayo tayari yamejaa nchini Kenya au Ethiopia.",
+    "topic": "Medical Assistance",
+    "incident": "East Africa Drought"
+  },
+  "Barents": {
+    "center": {
+      "lat": 16.009150,
+      "lng": 38.483516
+    },
+    "language": "Swahili",
+    "sentence": "Umoja wa Mataifa wiki iliyopita ilitoa ombi la msaada wa dola bilioni 1.4.Ukame umelazimisha maelfu kwa maelfu ya wasomali kuzikimbia nyumba zao kwenda kutafuta chakula na maji.",
+    "topic": "Water Supply",
+    "incident": "East Africa Drought"
+  },
+  "Russia_2": {
+    "center": {
+      "lat": 27.923786,
+      "lng": 85.334978
+    },
+    "language": "Nepali",
+    "sentence": "नेपाल में भूकंप से भारी तबाही की आशंका जताई जा रही है. रिक्टर स्केल पर 7.9 तीव्रता वाले इस भूकंप से कई लोगों के मारे जाने की आशंका है, हालांकि अभी सही आंकड़ों की पुष्टि नहीं हो पाई है.",
+    "topic": "Search and Rescue",
+    "incident": "Nepal earthquake"
+  },
+  "London": {
+    "center": {
+      "lat": 27.115105,
+      "lng": 85.082292
+    },
+    "language": "Nepali",
+    "sentence": "भूकंप का केंद्र नेपाल की राजधानी काठमांडू से 80 किलोमीटर दूर लमजुंग में है. नेपाल में पहला झटका 11 बजे करीब एक मिनट तक महसूस किया गया.",
+    "topic": "Water Supply",
+    "incident": "Nepal earthquake"
+  },
+  "Japan": {
+    "center": {
+      "lat": 26.929153,
+      "lng": 86.071062
+    },
+    "language": "Nepali",
+    "sentence": "नेपाल के साथ-साथ उत्तर भारत के देहरादून से पश्चिम भारत के अहमदाबाद और पूर्व में कोलकाता और रायपुर तक भूकंप के झटके महसूस किए गए.",
+    "topic": "Search and Rescue",
+    "incident": "Nepal earthquake"
+  },
+  "Ramallah": {
+    "center": {
+      "lat": 27.427590,
+      "lng": 83.038835
+    },
+    "language": "Nepali",
+    "sentence": "ट्रेकिंग गांव के 55 होटल तबाह, कई जिंदा दबे",
+    "topic": "Search and Rescue",
+    "incident": "Nepal earthquake"
+  },
+  "Gaza": {
+    "center": {
+      "lat": 27.085765,
+      "lng": 83.796892
+    },
+    "language": "Bengali",
+    "sentence": "বাংলাদেশে, আজ রবিবারেও ঢাকায় দু’দফা ভূ কম্পন অনুভূত হয়েছে- মানুষ তীব্র আতঙ্কে রয়েছেন ।ইতিমধ্যে নেপালে ত্রাণ সামগ্রী ও মেডিকেল টীম পাঠিয়েছে বাংলাদেশ- জানাচ্ছেন ঢাকা থেকে আমির খসরু।",
+    "topic": "Infrastructure",
+    "incident": "Nepal earthquake"
+  },
+  "Austria": {
+    "center": {
+      "lat": 28.610789,
+      "lng": 83.434343
+    },
+    "language": "Bengali",
+    "sentence": "উদ্ধার কর্ম ঐ পার্বত্য অঞ্চলে শুরু হয়েছে। ভারত ও পাকিস্তান সহ নেপালের প্রতিবেশিরা এই ঘটনায় শোকবার্তা পাঠিয়েছে এবং সহায়তা প্রদানের কথা বলেছে। কাঠমন্ডু বিমান বন্দর বন্ধ রয়েছে এবং সব রকম যোগাযোগ বিচ্ছিন্ন হয়ে পড়েছে।",
+    "topic": "Medical Assistance",
+    "incident": "Nepal earthquake"
+  },
+  "Holland": {
+    "center": {
+      "lat": 26.870368,
+      "lng": 83.357439
+    },
+    "language": "Urdu",
+    "sentence": "بھارت کی ریاست بہار میں زلزلے کے باعث کم ازکم 20 افراد کی ہلاکت اور 35 کے زخمی ہونے کی اطلاع موصول ہوئی ہے۔",
+    "topic": "Search and Rescue",
+    "incident": "Nepal earthquake"
+  },
+  "Beijing": {
+    "center": {
+      "lat": 26.664378,
+      "lng": 83.862810
+    },
+    "language": "Urdu",
+    "sentence": "امدادی سامان اور دیگر امدادی کارکنوں کو لے کر آنے والے ہوائی جہاز اتوار کی صبح کٹھمنڈو کے ہوائی اڈے پر پہنچنا شروع ہو گئے ہیں جب کہ ماؤنٹ ایورسٹ کے بیس کیمپ سے بھی 15 زخمی کوہ پیماؤں کو دارالحکومت پہنچا دیا گیا ہے۔",
+    "topic": "Search and Rescue",
+    "incident": "Nepal earthquake"
+  },
+  "Argentina": {
+    "center": {
+      "lat": 26.742894,
+      "lng": 85.587663
+    },
+    "language": "Urdu",
+    "sentence": "کٹھمنڈو میں کئی عمارتیں جن میں تاریخی نوعیت کی عمارتیں بھی شامل ہیں زمین بوس ہو گئیں اور ہزاروں لوگوں نے رات کھلے آسمان تلے بسر کی۔",
+    "topic": "Search and Rescue",
+    "incident": "Nepal earthquake"
+  },
+  "Buenos_Aires": {
+    "center": {
+      "lat": 28.289834,
+      "lng": 83.891478
+    },
+    "language": "Urdu",
+    "sentence": "اس بدترین زلزلے سے بھارت کی مشرقی ریاست بہار کے علاوہ چین کے علاقے تبت اور بنگلہ دیش میں بھی ہلاکتیں ہوئیں جن کی تعداد 62 ہو گئی ہے۔",
+    "topic": "Food Supply",
+    "incident": "Nepal earthquake"
+  },
+  "Yunnan1": {
+    "center": {
+      "lat": 6.840362,
+      "lng": -1.713663
+    },
+    "language": "Hausa",
+    "sentence": "Wakilin Hukumar Lafiya ta Duniya a Uganda ya bayyana jiya asabar cewa, an sami mutane 20 dauke da kwayar cutar a yankin Kibaale, dake kimanin tazarar kilomita 200 da yammacin Kampala babban birnin kasar.",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan2": {
+    "center": {
+      "lat": 7.067250,
+      "lng": -9.475908
+    },
+    "language": "Hausa",
+    "sentence": "Likitoci sun gano kwayar cutar Ebola a kasar Guinea, lokacin da wata irin zazzafar masassara mai sa zubar jini ta fatar jiki ta barke ta kuma halaka mutane 34 a kalla a kasar.",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan3": {
+    "center": {
+      "lat": 8.670236,
+      "lng": -10.097619
+    },
+    "language": "Hausa",
+    "sentence": "Wakilin sashen Hausa, Ladan Ibrahim Ayawa, ya ambaci jami'ai su na fadin cewa mutumin da ya mutu a sanadin cutar ta Ebola sunansa Patrick Sawyer, dan kasar Liberiya, mai shekaru 40 da haihuwa, wanda ya fara rashin lafiya lokacin da ya isa Najeriya ranar lahadi daga Monrovia.",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan4": {
+    "center": {
+      "lat": 8.959350,
+      "lng": -12.063323
+    },
+    "language": "Hausa",
+    "sentence": "An samu mutane kusan 1,100 wadanda suka kamu da cutar, amma wannan adadin yana iya karuwa sosai idan har wannan kwayar cuta ta fara yaduwa a Najeriya, musamman a Lagos mai mutane fiye da miliyan 17.",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan5": {
+    "center": {
+      "lat": 9.887724,
+      "lng": -13.401253
+    },
+    "language": "Hausa",
+    "sentence": "Kungiyar Lafiya ta duniya tace kasar Saliyo ta tabbatar cewa a karshen watan jiya na Nuwamba, mutane 537 aka tabbata sun kamu da cutar a kasar, karin fiye da mutane 150 ke nan cikin mako guda.",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan6": {
+    "center": {
+      "lat": 6.446792,
+      "lng": -10.685699
+    },
+    "language": "English",
+    "sentence": "",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan7": {
+    "center": {
+      "lat": 10.515382,
+      "lng": -9.533646
+    },
+    "language": "English",
+    "sentence": "",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan8": {
+    "center": {
+      "lat": 8.628878,
+      "lng": -11.817180
+    },
+    "language": "English",
+    "sentence": "The World Health Organization (WHO) confirmed on Sunday a second case of Ebola in Democratic Republic of Congo after an outbreak this week of 17 other suspected cases.",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan9": {
+    "center": {
+      "lat": 12.223905,
+      "lng": 8.570243
+    },
+    "language": "English",
+    "sentence": "A healthcare worker who has just returned from West Africa has been diagnosed with Ebola and is being treated in hospital in Glasgow.",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan10": {
+    "center": {
+      "lat": 9.136647,
+      "lng": 7.427665
+    },
+    "language": "English",
+    "sentence": "The ebola virus that has killed almost 1,000 people in West Africa this year is fatal for 'up to 90%' of those infected, according to the World Health Organization (WHO). ",
+    "topic": "Medical Assistance",
+    "incident": "West Africa Ebola"
+  },
+  "Yunnan11": {
+    "center": {
+      "lat": 11.761674,
+      "lng": 42.780440
+    },
+    "language": "Amharic",
+    "sentence": "በዕረቡ ምሽት ዘገባችን ካለፈው አርብ ጀምሮ ውሃ በመቋረጡ ምክንያት ችግር ውስጥ መኾናቸውን የገለጹት አምቦ ዩኒቨርስቲ አዋሮ ግቢ ተማሪዎች በተጨማሪም መብራት እንደተቋረጠና ይህንንም ተከትሎ የግቢው ተማሪዎች በሙሉ ተቃውሞ ሲያቀርቡ አስለቃሽ ጭስ እንደተወረወረባቸውና እንደተደበደቡ አንዳንድ ተማሪዎች ገለጹ፡፡",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan12": {
+    "center": {
+      "lat": 9.856686,
+      "lng": 44.028203
+    },
+    "language": "Amharic",
+    "sentence": "በአማራ ክልል እሁድ ዕለት ሦስት ወጣቶች መገደላቸው ቤተሰቦቻቸውና ነዋሪዎች ገለጹ",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan13": {
+    "center": {
+      "lat": 6.340502,
+      "lng": 46.869950
+    },
+    "language": "Somali",
+    "sentence": "Mid ka mid ah dhacdooyinkii ugu darnaa, ayay sheegtay warbixintu, inay ahayd isku dhac dhex maray ardayda jaamacadda Jimma ee gobolka galbeedka Oromia 10-kii illaa 11-kii January, markaasi oo booliiska ay bambooyin ku tureen dadkii dibadbaxayey.",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan14": {
+    "center": {
+      "lat": 6.673824,
+      "lng": 43.791390
+    },
+    "language": "Somali",
+    "sentence": "Kolonyo baabuur ah oo ay leeyihiin ciidamada AMISOM ayaa lagu weeraray meel u dhow deegaan Yaaq-Bari-Weyne ee gobolka Shabeelada Hoose.",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan15": {
+    "center": {
+      "lat": 5.280338,
+      "lng": 42.863876
+    },
+    "language": "Tigrinya",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan16": {
+    "center": {
+      "lat": 3.509540,
+      "lng": 43.396703
+    },
+    "language": "Tigrinya",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan17": {
+    "center": {
+      "lat": 13.604465,
+      "lng": 39.390630
+    },
+    "language": "Oromo",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan18": {
+    "center": {
+      "lat": 6.356593,
+      "lng": 41.293074
+    },
+    "language": "Oromo",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan19": {
+    "center": {
+      "lat": 12.980812,
+      "lng": 37.381941
+    },
+    "language": "Amharic",
+    "sentence": "በአዲስ አበባ ዙሪያ የሚገኙ የኦሮሚያ ከተሞችን በአዲስ አበባ ማስተር ችላንውስጥ አካትቶ ለማልማት በሚል የተያዘውን ዕቅድ የኦሮሚያ ዩኒቨርሲቲዎች ተማሪዎች በተለያዩ ከተሞች ተቃውሞዎቻቸውን እያሰሙ ነው፡፡",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan20": {
+    "center": {
+      "lat": 9.490044,
+      "lng": 42.699324
+    },
+    "language": "Amharic",
+    "sentence": "አረና ትግራይ በበኩሉ የትግራይ ሕዝብ ያለበትን ሁኔታ ባለመረዳት በአማራ ክልልና በኦሮሚያ እየተገደሉ ለሚገኙ ወገኖች አጋር አላሳያችሁም በሚል የትግራይ ተወላጆች ላይ ጫና ማሳደር ንብረት ማቃጣል እና ማሰደድ እንዳለ ሕዝብ ግንኙነቱ ተናግረዋል።",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Ethiopia Unrest"
+  },
+  "Yunnan21": {
+    "center": {
+      "lat": 36.476040,
+      "lng": 39.200183
+    },
+    "language": "Kurdish",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan22": {
+    "center": {
+      "lat": 36.067529,
+      "lng": 38.078201
+    },
+    "language": "Kurdish",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan23": {
+    "center": {
+      "lat": 36.257389,
+      "lng": 39.691395
+    },
+    "language": "Turkish",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan24": {
+    "center": {
+      "lat": 35.583844,
+      "lng": 37.156628
+    },
+    "language": "Turkish",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan25": {
+    "center": {
+      "lat": 37.114909,
+      "lng": 45.473832
+    },
+    "language": "Farsi",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan26": {
+    "center": {
+      "lat": 35.905295,
+      "lng": 51.295874
+    },
+    "language": "Farsi",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan27": {
+    "center": {
+      "lat": 35.146506,
+      "lng": 38.440602
+    },
+    "language": "Russian",
+    "sentence": "",
+    "topic": "Evacuation",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan28": {
+    "center": {
+      "lat": 38.865035,
+      "lng": 35.715993
+    },
+    "language": "Russian",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan29": {
+    "center": {
+      "lat": 36.305921,
+      "lng": 37.100270
+    },
+    "language": "Kurdish",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan30": {
+    "center": {
+      "lat": 37.098655,
+      "lng": 37.407887
+    },
+    "language": "Turkish",
+    "sentence": "",
+    "topic": "Terrorism or other Extreme Violence",
+    "incident": "Mide West ISIS"
+  },
+  "Yunnan31": {
+    "center": {
+      "lat": 55.850470,
+      "lng": 37.526216
+    },
+    "language": "Russian",
+    "sentence": "",
+    "topic": "Shelter",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan32": {
+    "center": {
+      "lat": 50.214412,
+      "lng": 36.108365
+    },
+    "language": "Russian",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan33": {
+    "center": {
+      "lat": 52.014057,
+      "lng": 39.322161
+    },
+    "language": "Russian",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan34": {
+    "center": {
+      "lat": 42.235115,
+      "lng": 45.119595
+    },
+    "language": "Russian",
+    "sentence": "",
+    "topic": "Evacuation",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan35": {
+    "center": {
+      "lat": 45.441266,
+      "lng": 34.501959
+    },
+    "language": "Ukrainian",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan36": {
+    "center": {
+      "lat": 48.267395,
+      "lng": 37.799224
+    },
+    "language": "Ukrainian",
+    "sentence": "",
+    "topic": "Medical Assistance",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan37": {
+    "center": {
+      "lat": 48.754418,
+      "lng": 39.206536
+    },
+    "language": "Ukrainian",
+    "sentence": "",
+    "topic": "Civil Unrest or Wide-spread Crime",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan38": {
+    "center": {
+      "lat": 41.716690,
+      "lng": 44.806578
+    },
+    "language": "Georgian",
+    "sentence": "",
+    "topic": "Shelter",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan39": {
+    "center": {
+      "lat": 42.369394,
+      "lng": 44.015562
+    },
+    "language": "Georgian",
+    "sentence": "",
+    "topic": "Medical Assistance",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan40": {
+    "center": {
+      "lat": 42.870623,
+      "lng": 43.158628
+    },
+    "language": "Georgian",
+    "sentence": "",
+    "topic": "Evacuation",
+    "incident": "Russia and Ukraine"
+  },
+  "Yunnan41": {
+    "center": {
+      "lat": 18.485915,
+      "lng": 103.054426
+    },
+    "language": "Lao",
+    "sentence": "",
+    "topic": "Shelter",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan42": {
+    "center": {
+      "lat": 16.060747,
+      "lng": 106.180504
+    },
+    "language": "Lao",
+    "sentence": "",
+    "topic": "Medical Assistance",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan43": {
+    "center": {
+      "lat": 15.014324,
+      "lng": 100.299511
+    },
+    "language": "Thai",
+    "sentence": "",
+    "topic": "Medical Assistance",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan44": {
+    "center": {
+      "lat": 12.581932,
+      "lng": 100.914745
+    },
+    "language": "Thai",
+    "sentence": "",
+    "topic": "Food Supply",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan45": {
+    "center": {
+      "lat": 12.868691,
+      "lng": 106.327038
+    },
+    "language": "Khmer",
+    "sentence": "",
+    "topic": "Infrastructure",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan46": {
+    "center": {
+      "lat": 11.795054,
+      "lng": 104.739577
+    },
+    "language": "Khmer",
+    "sentence": "",
+    "topic": "Utilities, Energy, or Sanitatio",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan47": {
+    "center": {
+      "lat": 10.774516,
+      "lng": 106.627636
+    },
+    "language": "Vietnamese",
+    "sentence": "",
+    "topic": "Evacuation",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan48": {
+    "center": {
+      "lat": 12.710569,
+      "lng": 109.000683
+    },
+    "language": "Vietnamese",
+    "sentence": "",
+    "topic": "Infrastructure",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnan49": {
+    "center": {
+      "lat": -4.800318,
+      "lng": 119.547558
+    },
+    "language": "Indonesian",
+    "sentence": "",
+    "topic": "Evacuation",
+    "incident": "East Asia Hurrican"
+  },
+  "Yunnanx50": {
+    "center": {
+      "lat": 34.739405,
+      "lng": 135.427864
+    },
+    "language": "Japanese",
+    "sentence": "",
+    "topic": "Evacuation",
+    "incident": "East Asia Hurrican"
+  }
+}
