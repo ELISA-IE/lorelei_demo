@@ -2,7 +2,7 @@
  * Author: Ying Lin
  * Date: Aug 31, 2017
  */
-var DATA_SOURCE = '/data';
+var DATA_SOURCE = '/elisa_ie/heatmap/data';
 var loading_div = $('#loading');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGltdGVuZyIsImEiOiJjajJjcGdzNjUwM2NkMndvNzBpeTBrZjFwIn0.9YDJZ3qB_VuNHF3L-ni6PQ';
@@ -151,7 +151,7 @@ function initialize_map() {
                     ]
                 },
                 'icon-size': {stops: [[1, .2], [15, .5]]},
-                'icon-padding': {stops: [[1, 30], [15, 2]]},
+                'icon-padding': {stops: [[1, 20], [15, 2]]},
                 // 'icon-opacity': {stops: [[1, .5], [3, 1]]}
             }
         });

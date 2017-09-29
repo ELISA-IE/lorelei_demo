@@ -1,0 +1,139 @@
+span#per {
+  color: red;
+  font-weight: bold;
+}
+span#perwrel {
+  color: red;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#pertag {
+  color: red;
+  font-size: 70%;
+}
+
+span#org {
+  color: forestgreen;
+  font-weight: bold;
+}
+span#orgwrel {
+  color: forestgreen;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#orgtag {
+  color: forestgreen;
+  font-size: 70%;
+}
+
+span#gpe {
+  color: blue;
+  font-weight: bold;
+}
+span#gpewrel {
+  color: blue;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#gpetag {
+  color: blue;
+  font-size: 70%;
+}
+
+span#fac {
+  color: #A9BCF5;
+  font-weight: bold;
+}
+span#facwrel {
+  color: #A9BCF5;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#factag {
+  color: #A9BCF5;
+  font-size: 70%;
+}
+
+span#loc {
+  color: orange;
+  font-weight: bold;
+}
+span#locwrel {
+  color: orange;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#loctag {
+  color: orange;
+  font-size: 70%;
+}
+
+span#ttl {
+  color: pink;
+  font-weight: bold;
+}
+span#ttlwrel {
+  color: pink;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#ttltag {
+  color: pink;
+  font-size: 70%;
+}
+
+span#other {
+  color: purple;
+  font-weight: bold;
+}
+span#otherwrel {
+  color: purple;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#othertag {
+  color: purple;
+  font-size: 70%;
+}
+
+span#timex {
+  color: pink;
+  font-weight: bold;
+}
+span#timexwrel {
+  color: pink;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#timextag {
+  color: pink;
+  font-size: 70%;
+}
+
+span#value {
+  color: yellow;
+  font-weight: bold;
+}
+span#valuewrel {
+  color: yellow;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#valuetag {
+  color: yellow;
+  font-size: 70%;
+}
+
+span#mention {
+  color: red;
+  font-weight: bold;
+}
+span#mentionwrel {
+  color: red;
+  font-weight: bold;
+  text-decoration: underline;
+}
+span#mentiontag {
+  color: red;
+  font-size: 70%;
+}

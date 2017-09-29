@@ -1,0 +1,71 @@
+<div id="visualization_div">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <!-- if jquery not loaded, load it -->
+    <script>
+        if(window['jQuery'] == undefined || !window['jQuery'])
+        {
+            document.write('<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">');
+            document.write("<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'><\/script>");
+            document.write('<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"><\/script>');
+
+        }
+    </script>
+
+    <script>
+        while (!window.jQuery){}  // wait for jQuery loaded.
+    </script>
+    <!-- Tipped -->
+    <script id="tipped_js" type="text/javascript" src="http://blender02.cs.rpi.edu:3300/static/javascripts/elisa_ie/tipped/tipped.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://blender02.cs.rpi.edu:3300/static/stylesheets/elisa_ie/tipped/tipped.css" />
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            Tipped.create('.boxes .box');
+        });
+    </script>
+
+    <!-- Style -->
+    <link rel="stylesheet" type="text/css" href="http://blender02.cs.rpi.edu:3300/static/stylesheets/elisa_ie/style/style.css" />
+    <link rel="stylesheet" type="text/css" href="http://blender02.cs.rpi.edu:3300/static/stylesheets/elisa_ie/style/entity.css" />
+    <link rel="stylesheet" type="text/css" href="http://blender02.cs.rpi.edu:3300/static/stylesheets/elisa_ie/style/event.css" />
+    <meta name="robots" content="noindex,nofollow" />
+
+    <!-- Tooltip -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Tipped.create('.inline');
+        });
+    </script>
+
+    <!-- Highlight -->
+    <script type="text/javascript" src="http://blender02.cs.rpi.edu:3300/static/javascripts/elisa_ie/highlight/highlight.js"></script>
+
+    <!-- Button show hide -->
+    <script type="text/javascript">
+        function toggle_visibility(id) {
+            var e = document.getElementById(id);
+            if(e.style.display == 'block')
+                e.style.display = 'none';
+            else
+                e.style.display = 'block';
+        }
+    </script>
+
+    <!-- Button show and hide all-->
+    <script type="text/javascript">
+        var divState = {'sys': true};
+        function showhide(id) {
+            if (document.getElementById) {
+                var divid = document.getElementById(id);
+                divState[id] = (divState[id]) ? false : true;
+                //close others
+                for (var div in divState){
+                    if (divState[div] && div != id){
+                        document.getElementById(div).style.display = 'none';
+                        divState[div] = false;
+                    }
+                }
+                divid.style.display = (divid.style.display == 'block' ? 'none' : 'block');
+            }
+        }
+    </script>

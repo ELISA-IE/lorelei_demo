@@ -1,0 +1,97 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ELISA-IE</title>
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <!-- load demo js -->
+    <script src="/static/javascripts/elisa_ie/elisa_ie.js"></script>
+    <!-- tipped -->
+    <script type="text/javascript" src="/static/javascripts/elisa_ie/tipped/tipped.js"></script>
+    <!-- select2 -->
+    <script src="/static/select2/js/select2.full.js"></script>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- tipped -->
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/elisa_ie/tipped/tipped.css" />
+    <!-- image slider -->
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets//elisa_ie/image_scroll.css" />
+    <!-- select2 -->
+    <link rel="stylesheet" href="/static/select2/css/select2.css">
+    <!-- base css -->
+    <link href="/static/stylesheets/elisa_ie/base.css" rel="stylesheet" />
+
+</head>
+<body>
+<img src="/static/images/elisa_ie/elisa_logo_100.png" id="elisa-logo">
+<h1>ELISA IE</h1>
+
+<div class="tab" tab="0">
+    <div class="step">
+        <h3>Incident Language IE Demo</h3>
+        <div class="form-div">
+            <p>Choose a language:</p>
+            <select id="demo_il_selection" style="width: 300px"></select>
+            <script>
+                expand_select_dropdown('demo_il_selection', '{{ online_languages|tojson }}')
+            </script>
+            <script>
+                $('#demo_il_selection').select2();
+            </script>
+
+            <div id="demo_il_panel_wrapper">
+                <button type="button" class="dropdown" id='demo_il_dropdown_btn'>Browse {{ online_languages|length }} languages &#9662;</button>
+                <div id="demo_il_panel">
+                    <div id='demo_il_panel_list'>
+                        {% for il_code, (il, status, lang_group, direction) in online_languages.items() %}
+                        <div class="demo_il_button" value="{{ il_code }}">{{ il }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div id="demo_instruction">
+                <p>
+                    Three examples are provided. You could also enter your own text.<br>
+                </p>
+            </div>
+            <p>
+                <!-- use bootstrap button type -->
+                <button type="button" class="btn-sm" btn_index="0">example 1</button>
+                <button type="button" class="btn-sm" btn_index="1">example 2</button>
+                <button type="button" class="btn-sm" btn_index="2">example 3</button>
+                <button type="button" class="btn-sm" btn_index="3">enter text</button>
+            </p>
+            <form id="demo_form" method="POST">
+                <input id="sample_docs" style="visibility: hidden">
+                <p><textarea disabled class="input_textarea" id="demo_input"></textarea></p>
+                <p>
+                    <b>Name Tagger:</b> a supervised LSTMs model, trained from annotations automatically derived from Wikipedia markups
+                </p>
+                <p>
+                    <b>Entity Linking:</b> unsupervised algorithm based on salience, similarity and coherence measures on knowledge networks
+                </p>
+                <p>
+                    (the demo takes about 30 seconds to finish.)
+                </p>
+                <div class="right">
+                    <button id="demo_tag_button" type="submit">Submit</button>
+                </div>
+            </form>
+
+            <div id='demo_result' style="display: none; width: 100%;
+            padding-bottom: 10px; padding-left: 10px; padding-right: 10px">
+                <p>Tagging result (move cursor on the tagged names to see more details)</p>
+                <div id='demo_result_html' style="width: 100%;padding-bottom: 10px; padding-left: 10px; padding-right: 10px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
