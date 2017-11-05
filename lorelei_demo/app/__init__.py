@@ -35,9 +35,18 @@ import lorelei_demo
 lorelei_demo_dir = os.path.join(os.path.dirname(lorelei_demo.__file__), '../')
 
 #
+# set theano flags
+#
+os.environ["THEANO_FLAGS"] = "optimizer=fast_compile,floatX=float32"
+
+#
 # preload name tagger models
 #
-# todo
+from lorelei_demo.app.model_preload import preload_models
+if args.preload:
+    models = preload_models()
+else:
+    models = {}
 
 #
 # register blueprint modules

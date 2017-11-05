@@ -44,26 +44,29 @@
                 <select id="map-language-select" style="opacity: .6; outline: none;">
                     <option value="all">All</option>
                     <option value="Amharic">Amharic</option>
-                    <option value="Bengali">Bengali</option>
+{#                    <option value="Bengali">Bengali</option>#}
+                    <option value="Chinese">Chinese</option>
                     <option value="English">English</option>
-                    <option value="Farsi">Farsi</option>
-                    <option value="Georgian">Georgian</option>
-                    <option value="Hausa">Hausa</option>
-                    <option value="Indonesian">Indonesian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Khmer">Khmer</option>
+{#                    <option value="Farsi">Farsi</option>#}
+{#                    <option value="Georgian">Georgian</option>#}
+{#                    <option value="Hausa">Hausa</option>#}
+{#                    <option value="Indonesian">Indonesian</option>#}
+{#                    <option value="Japanese">Japanese</option>#}
+{#                    <option value="Khmer">Khmer</option>#}
                     <option value="Kurdish">Kurdish</option>
                     <option value="Lao">Lao</option>
                     <option value="Nepali">Nepali</option>
                     <option value="Oromo">Oromo</option>
                     <option value="Russian">Russian</option>
                     <option value="Somali">Somali</option>
-                    <option value="Thai">Thai</option>
+                    <option value="Spanish">Spanish</option>
+{#                    <option value="Thai">Thai</option>#}
                     <option value="Tigrinya">Tigrinya</option>
-                    <option value="Turkish">Turkish</option>
+{#                    <option value="Turkish">Turkish</option>#}
                     <option value="Ukrainian">Ukrainian</option>
-                    <option value="Urdu">Urdu</option>
-                    <option value="Vietnamese">Vietnamese</option>
+                    <option value="Uyghur">Uyghur</option>
+{#                    <option value="Urdu">Urdu</option>#}
+{#                    <option value="Vietnamese">Vietnamese</option>#}
                 </select>
             </div>
             <div id="map-topic-list">
@@ -115,6 +118,10 @@
                         <div class="topic-label">Amharic</div>
                     </li>
                     <li>
+                        <div class="topic-circle" style="background-color: rgb(192, 192, 192);"></div>
+                        <div class="topic-label">Chinese</div>
+                    </li>
+                    <li>
                         <div class="topic-circle" style="background-color: rgb(0, 164, 127);"></div>
                         <div class="topic-label">Kurdish</div>
                     </li>
@@ -131,12 +138,20 @@
                         <div class="topic-label">Somali</div>
                     </li>
                     <li>
+                        <div class="topic-circle" style="background-color: rgb(204, 153, 255);"></div>
+                        <div class="topic-label">Spanish</div>
+                    </li>
+                    <li>
                         <div class="topic-circle" style="background-color: rgb(73, 165, 165);"></div>
                         <div class="topic-label">Tigrinya</div>
                     </li>
                     <li>
                         <div class="topic-circle" style="background-color: rgb(228, 0, 69);"></div>
                         <div class="topic-label">Ukrainian</div>
+                    </li>
+                    <li>
+                        <div class="topic-circle" style="background-color: rgb(199, 187, 231);"></div>
+                        <div class="topic-label">Uyghur</div>
                     </li>
                     <li>
                         <div class="topic-circle" style="background-color: rgb(215, 188, 0);"></div>
@@ -152,6 +167,7 @@
             <div id="popup-text-title"></div>
             <div id="popup-text-language"></div>
             <div id="popup-text"></div>
+            <div id="popup-text-translation"></div>
         </div>
         <button id="popup-close"></button>
     </div>
@@ -178,7 +194,7 @@
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js"></script>
-<script src="{{ url_for('static', filename="javascripts/heatmap.js") }}"></script>
+<script src="{{ url_for('static', filename="javascripts/heatmap/demo.js") }}"></script>
 
 </body>
 </html>

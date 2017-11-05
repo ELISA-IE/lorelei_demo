@@ -101,10 +101,10 @@ body {
     position: fixed;
     padding: 10px;
     left: 0;
-    bottom: 100px;
-    height: 100px;
+    bottom: 160px;
+    height: 200px;
     width: 500px;
-    background-color: rgba(0,0,0,.7);
+    background-color: rgba(20,20,20,.9);
     box-shadow: 1px 1px 10px rgba(0,0,0,.5);
 }
 #popup-image {
@@ -112,14 +112,14 @@ body {
     opacity: .9;
 }
 #popup-text-wrapper {
-    height: 80px;
+    height: 180px;
     overflow-y: auto;
 }
 #popup-text-language {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     padding: 0 10px;
     color: #aaa;
-    font-size: 11px;
+    font-size: 13px;
 }
 #popup-text-language::before {
     content: 'Language: '
@@ -128,13 +128,17 @@ body {
     margin-bottom: 10px;
     padding: 0 10px;
     color: #ccc;
-    font-size: 13px;
+    font-size: 15px;
 }
-#popup-text {
+#popup-text, #popup-text-translation {
     padding: 0 10px;
-    color: #aaa;
-    font-size: 12px;
+    color: #bbb;
+    font-size: 14px;
     line-height: 1.2;
+}
+#popup-text-translation {
+    margin-top: 10px;
+    font-style: italic;
 }
 
 #popup-close {

@@ -4,7 +4,7 @@ import os
 import uuid
 import socket
 import subprocess
-import io
+import requests
 import urllib.request
 import xml.etree.ElementTree as ET
 
@@ -77,8 +77,8 @@ def status(identifier):
     return json.dumps(result, indent=4, sort_keys=True)
 
 
-@bp_api.route("/elisa_ie/run/<identifier>", methods=["POST"])
-def run(identifier):
+@bp_api.route("/elisa_ie/entity_discovery_and_linking/<identifier>", methods=["POST"])
+def entity_discovery_and_linking(identifier):
     """
     single document API
     """
@@ -95,10 +95,7 @@ def run(identifier):
     plain_text_input = request.form.get('text')
 
     # run ner
-    tab_str = run_plain_text(language_code, plain_text_input)
-
-    # run entity linking
-    tab_str = entity_linking(tab_str)
+    tab_str = edl_plain_text(language_code, plain_text_input)
 
     if output_format == 'EvalTab':
         result = tab_str
@@ -139,13 +136,18 @@ def name_transliteration(identifier):
     return jsonify(transliteration_result)
 
 
-# todo
-def entity_linking(tab_str):
-    return tab_str
+@bp_api.route("/elisa_ie/entity_linking/<identifier>", methods=["GET"])
+def entity_linking(identifier):
+    query = request.args.get('query')
+    type = request.args.get('type')
+
+    linking_result = entity_linking_with_query(query, identifier, type)
+
+    return jsonify(linking_result)
 
 
 @bp_api.route("/elisa_ie/localize/<identifier>", methods=['GET'])
-def api_localize(identifier):
+def localize(identifier):
     query = request.args.get('query')
     language_code = identifier
 
@@ -188,7 +190,7 @@ def get_sample_doc(identifier):
         res_bios = []
         doc_bio = []
         current_bio = []
-        for line in io.open(bio_fp, 'r', -1, 'utf-8'):
+        for line in open(bio_fp, 'r'):
             try:
                 if line.strip() == '':
                     doc_bio.append('\n'.join(current_bio))
@@ -278,7 +280,7 @@ def get_sample_doc(identifier):
 #
 # helper functions
 #
-def run_plain_text(language_code, plain_text, to_visualize=False):
+def edl_plain_text(language_code, plain_text, to_visualize=False):
     #
     # prepare data
     #
@@ -299,8 +301,28 @@ def run_plain_text(language_code, plain_text, to_visualize=False):
         plain_text = plain_text.replace("\r\n", "\n").replace("\r", "\n")
 
         # convert plain text to bio format
-        seg_option = 'nltk+linebreak'
-        tok_option = 'unitok'
+        seg_option_selection = {
+            'cmn': ['cdo', 'gan', 'hak', 'wuu', 'zh', 'zh-classical',
+                    'zh-min-nan']
+        }
+        seg_option_selection = {item: k for k, v in
+                                seg_option_selection.items() for item in v}
+        try:
+            seg_option = seg_option_selection[language_code]
+        except KeyError:
+            seg_option = 'nltk+linebreak'
+
+        tok_option_selection = {
+            'jieba': ['cdo', 'gan', 'hak', 'wuu', 'zh', 'zh-classical',
+                      'zh-min-nan']
+        }
+        tok_option_selection = {item: k for k, v in
+                                tok_option_selection.items() for item in v }
+        try:
+            tok_option = tok_option_selection[language_code]
+        except KeyError:
+            tok_option = 'unitok'
+
         bio_str = rsd2bio(plain_text, doc_id, seg_option, tok_option)
 
     # make temp file for input and output bio
@@ -312,55 +334,65 @@ def run_plain_text(language_code, plain_text, to_visualize=False):
     #
     # run dnn name tagger
     #
-    run_dnn(language_code, input_bio_file, output_tab_file)
+    ner_bio_result = run_ner(language_code, input_bio_file, output_tab_file)
 
-    tab_str = open(output_tab_file, encoding="utf8").read()
+    print('running linking...')
+    try:
+        edl_tab_result = entity_linking_with_bio(ner_bio_result, language_code)
+        tab_str = edl_tab_result.text
+    except:
+        tab_str = bio2tab(ner_bio_result)
 
     if to_visualize:
-        # create sys tab
-        sys_tab = tempfile.mktemp()
-        with open(sys_tab, 'w') as f:
-            f.write(tab_str)
-
-        # check rtl
-        status = get_status()  # check if the language is rtl
-        if status[language_code][3] == 'rtl':
-            rtl = True
+        if not tab_str.strip():
+            visualization_html = \
+                '<span style="color:red;">No name found.</span>'
+            tab_str = 'No name found.'
         else:
-            rtl = False
+            # create sys tab
+            sys_tab = tempfile.mktemp()
+            with open(sys_tab, 'w') as f:
+                f.write(tab_str)
 
-        # create workspace dir
-        workspace_dir = tempfile.mkdtemp()
-        print('visualization temp dir: ' + workspace_dir)
+            # check rtl
+            status = get_status()  # check if the language is rtl
+            if status[language_code][3] == 'rtl':
+                rtl = True
+            else:
+                rtl = False
 
-        if seleted_doc_index != 3:  # if it's a sample doc
-            # create gold tab
-            gold_tab_str = bio2tab(bio_str)
+            # create workspace dir
+            workspace_dir = tempfile.mkdtemp()
+            print('visualization temp dir: ' + workspace_dir)
 
-            gold_tab = tempfile.mktemp()
-            with open(gold_tab, 'w') as f:
-                f.write(gold_tab_str)
-            print('demo sample gold tab path: %s' % gold_tab)
+            if seleted_doc_index != 3:  # if it's a sample doc
+                # create gold tab
+                gold_tab_str = bio2tab(bio_str)
 
-            try:
-                visualization_html = visualize_single_doc_with_gold(
-                    doc_id, None, gold_tab, sys_tab, out_dir=workspace_dir,
-                    srctext=plain_text, lang=language_code, rtl=rtl
-                )
-            except KeyError as e:  # if eval.tab file is empty
-                print(e)
-                visualization_html = \
-                    '<span style="color:red;">No name found.</span>'
-        else:  # if it's an entered text
-            try:
-                visualization_html = visualize_single_doc_without_gold(
-                    doc_id, None, sys_tab, out_dir=workspace_dir,
-                    srctext=plain_text, lang=language_code, rtl=rtl
-                )
-            except KeyError as e:  # if eval.tab file is empty
-                print(e)
-                visualization_html = \
-                    '<span style="color:red;">No name found.</span>'
+                gold_tab = tempfile.mktemp()
+                with open(gold_tab, 'w') as f:
+                    f.write(gold_tab_str)
+                print('demo sample gold tab path: %s' % gold_tab)
+
+                try:
+                    visualization_html = visualize_single_doc_with_gold(
+                        doc_id, None, gold_tab, sys_tab, out_dir=workspace_dir,
+                        srctext=plain_text, lang=language_code, rtl=rtl
+                    )
+                except KeyError as e:  # if eval.tab file is empty
+                    print(e)
+                    visualization_html = \
+                        '<span style="color:red;">No name found.</span>'
+            else:  # if it's an entered text
+                try:
+                    visualization_html = visualize_single_doc_without_gold(
+                        doc_id, None, sys_tab, out_dir=workspace_dir,
+                        srctext=plain_text, lang=language_code, rtl=rtl
+                    )
+                except KeyError as e:  # if eval.tab file is empty
+                    print(e)
+                    visualization_html = \
+                        '<span style="color:red;">No name found.</span>'
 
         return tab_str, visualization_html
     else:
@@ -427,22 +459,33 @@ def get_status():
 #
 # run name tagger methods
 #
-def run_dnn(language_code, input_file, ouput_file):
+def run_ner(language_code, input_file, ouput_file):
     print('=> running dnn name tagger...')
-    tagger_script = os.path.join(
-        lorelei_demo_dir, 'lorelei_demo/name_tagger/theano/wrapper/dnn_tagger.py'
-    )
 
-    model_dir = os.path.join(
-        lorelei_demo_dir, 'data/name_tagger/models/%s/model/' % language_code
-    )
+    from lorelei_demo.app import models
+    from lorelei_demo.app.model_preload import inference
 
-    ner_bio_file = tempfile.mktemp()
-    cmd = ['python3', tagger_script, input_file, ner_bio_file, model_dir,
-           '-b', '--threads', '1']
+    if language_code in models:
+        ner_bio_file = tempfile.mktemp()
 
-    print(' '.join(cmd))
-    subprocess.call(cmd)
+        f_eval, parameters, mapping = models[language_code]
+        inference(input_file, ner_bio_file, f_eval, parameters, mapping)
+    else:
+        # run with command line
+        tagger_script = os.path.join(
+            lorelei_demo_dir, 'lorelei_demo/name_tagger/theano/wrapper/dnn_tagger.py'
+        )
+
+        model_dir = os.path.join(
+            lorelei_demo_dir, 'data/name_tagger/models/%s/model/' % language_code
+        )
+
+        ner_bio_file = tempfile.mktemp()
+        cmd = ['python3', tagger_script, input_file, ner_bio_file, model_dir,
+               '-b', '--threads', '1']
+
+        print(' '.join(cmd))
+        subprocess.call(cmd)
 
     # convert bio result to tab
     ner_tab = bio2tab(open(ner_bio_file, encoding="utf8").read())
@@ -469,4 +512,31 @@ def run_dnn(language_code, input_file, ouput_file):
         print(' '.join(cmd))
         subprocess.call(cmd)
 
-    return ner_bio_file
+    return open(ner_bio_file).read()
+
+
+def entity_linking_with_query(query, language, type):
+    if type:
+        url = 'http://blender03.cs.rpi.edu:3301/linking?mention=%s&lang=%s&type=%s' % (
+            urllib.request.quote(query), language, type)
+    else:
+        url = 'http://blender03.cs.rpi.edu:3301/linking?mention=%s&lang=%s' % (
+            urllib.request.quote(query), language)
+    try:
+        linking_result = urllib.request.urlopen(url, timeout=5).read()
+    except (urllib.request.URLError, socket.timeout) as e:
+        linking_result = '[]'
+        print(e)
+
+    linking_result = json.loads(linking_result)
+
+    return linking_result
+
+
+def entity_linking_with_bio(bio_str, language):
+    tab = requests.post('http://blender03.cs.rpi.edu:3301/linking_bio',
+                        data={'bio_str': bio_str,
+                              'lang': language},
+                        timeout=2
+                        )
+    return tab

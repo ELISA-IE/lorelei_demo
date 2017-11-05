@@ -4,7 +4,7 @@ import os
 import json
 from flask import request, render_template, Blueprint
 import operator
-from lorelei_demo.app.api import run_plain_text, get_status
+from lorelei_demo.app.api import edl_plain_text, get_status
 from collections import OrderedDict
 
 
@@ -47,7 +47,7 @@ def run():
 
     demo_input = request.form.get("demo_input")
     # print demo_input,'input'
-    eval_tab, visualization_html = run_plain_text(selected_il, demo_input,
+    eval_tab, visualization_html = edl_plain_text(selected_il, demo_input,
                                                   to_visualize=True)
 
     res['visualization_html'] = visualization_html

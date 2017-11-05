@@ -3,11 +3,11 @@
     "tags": [
         {
             "name": "run",
-            "description": "APIs for testing models."
+            "description": "for runtime"
         },
         {
             "name": "train",
-            "description": "APIs for training models"
+            "description": "for training"
         }
     ],
     "info": {
@@ -141,13 +141,13 @@
                 }
             }
         },
-        "/run/{identifier}": {
+        "/entity_discovery_and_linking/{identifier}": {
             "post": {
                 "tags": [
                     "run"
                 ],
                 "consumes": ["multipart/form-data"],
-                "summary": "run the information extraction",
+                "summary": "run the entity discovery and linking system",
                 "description": "returns the ELISA IE result of a text document.",
                 "parameters": [
                     {
@@ -224,6 +224,47 @@
                 "responses": {
                     "200": {
                         "description": "name transliteration result in JSON"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/entity_linking/{identifier}": {
+            "get": {
+                "tags": ["run"],
+                "summary": "query based entity linking",
+                "description": "link the query to an entity in KB (Wikipedia)",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "description": "language code",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "a name to link",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "entity type: PER ORG GPE (optional)",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "entity linking results in JSON"
                     },
                     "default": {
                         "description": "Unexpected error",

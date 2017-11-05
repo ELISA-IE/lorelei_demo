@@ -37,6 +37,7 @@ def get_data():
             topic = item['topic']
             incident = item['incident']
             language = item['language']
+            translation = item['translation'] if 'translation' in item else ''
             languages.add(language)
             if topic == 'Noclass':
                 continue
@@ -47,7 +48,8 @@ def get_data():
                     'sentence': sentence,
                     'topic': topic,
                     'incident': incident,
-                    'language': language
+                    'language': language,
+                    'translation': translation
                 },
                 'geometry': {
                     'type': 'Point',
