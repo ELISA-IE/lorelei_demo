@@ -2,7 +2,7 @@
 **/*.pyc
 .idea/
 #data/name_tagger/
-data/app/elisa_ie/il_annotation_300
+
 lorelei_demo/transliteration/data
 lorelei_demo/scripts/.git
 lorelei_demo/name_tagger/theano/.git
