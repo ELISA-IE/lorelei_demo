@@ -1,0 +1,7 @@
+**/__pycache__/
+**/.DS_Store
+**/*.pyc
+.idea/
+example/model/
+example/result
+evaluation/temp
