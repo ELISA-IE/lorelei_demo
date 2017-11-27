@@ -16,10 +16,10 @@ ELISA information extraction demo has three components:
 
 4. Download the nltk sentence segmentation model: `python3 -m nltk.downloader punkt -d data/nltk_data`.
 
-5. Start the demo: `python3 lorelei_demo/run.py`.
+5. Start the demo: `PYTHONPATH=<lorelei_demo_path>:$PYTHONPATH python3 lorelei_demo/run.py`.
 
 6. Testing:
-    * Demo GUI: [http://0.0.0.0:3300/elisa_ie](http://0.0.0.0:3300/elisa_ie) (only English model is included, for models of the 282 languages, please contact us.)
+    * Demo GUI: [http://0.0.0.0:3300/elisa_ie](http://0.0.0.0:3300/elisa_ie) (only Hausa model is included, for models of the 282 languages, please contact us.)
     * API: [http://0.0.0.0:3300/elisa_ie/api](http://0.0.0.0:3300/elisa_ie/api)
     * Heatmap: [http://0.0.0.0:3300/elisa_ie/heatmap](http://0.0.0.0:3300/elisa_ie/heatmap).
 
