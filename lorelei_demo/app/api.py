@@ -517,10 +517,10 @@ def run_ner(language_code, input_file, ouput_file):
 
 def entity_linking_with_query(query, language, type):
     if type:
-        url = 'http://blender03.cs.rpi.edu:3301/linking?mention=%s&lang=%s&type=%s' % (
+        url = 'http://blender02.cs.rpi.edu:3301/linking?mention=%s&lang=%s&type=%s' % (
             urllib.request.quote(query), language, type)
     else:
-        url = 'http://blender03.cs.rpi.edu:3301/linking?mention=%s&lang=%s' % (
+        url = 'http://blender02.cs.rpi.edu:3301/linking?mention=%s&lang=%s' % (
             urllib.request.quote(query), language)
     try:
         linking_result = urllib.request.urlopen(url, timeout=5).read()
@@ -534,7 +534,7 @@ def entity_linking_with_query(query, language, type):
 
 
 def entity_linking_with_bio(bio_str, language):
-    tab = requests.post('http://blender03.cs.rpi.edu:3301/linking_bio',
+    tab = requests.post('http://blender02.cs.rpi.edu:3301/linking_bio',
                         data={'bio_str': bio_str,
                               'lang': language},
                         timeout=2

@@ -1,9 +1,11 @@
 **/.DS_Store
 **/*.pyc
 .idea/
-data/name_tagger/
+#data/name_tagger/
 data/app/elisa_ie/il_annotation_300
 lorelei_demo/transliteration/data
+lorelei_demo/scripts/.git
+lorelei_demo/name_tagger/theano/.git
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template

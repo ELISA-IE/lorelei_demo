@@ -6,6 +6,8 @@ parser.add_argument('--preload',  default=False, action="store_true",
                     help="preload name tagger models")
 parser.add_argument('--debug',  default=False, action="store_true",
                     help="run demo app with debug option")
+parser.add_argument('--port', default=3300, type=int,
+                    help='port that the demo runs on')
 
 # parse arguments
 args = parser.parse_args()
