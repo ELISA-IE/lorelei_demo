@@ -8,13 +8,13 @@ from collections import OrderedDict
 def bio2bio_offset(bio_str, d_id, split=0):
     bio_offset = OrderedDict()
     if split:
-        sents = [sent for sent in bio_str.strip().split('\n\n') if sent]
+        sents = [sent.strip() for sent in bio_str.strip().split('\n\n') if sent.strip()]
         bio_sents = dict()
         step = split
         for i in range(0, len(sents), step):
             bio_sents[d_id+'_%d' % (i/step)] = sents[i:i+step]
     else:
-        bio_sents = {d_id: [sent for sent in bio_str.strip().split('\n\n')]}
+        bio_sents = {d_id: [sent.strip() for sent in bio_str.strip().split('\n\n') if sent.strip()]}
 
     for d_id, sents in bio_sents.items():
         current_offset = 0

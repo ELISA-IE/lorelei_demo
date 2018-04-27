@@ -1,0 +1,7 @@
+# data to ignore
+data/name_tagger/models
+data/name_tagger/pytorch_models
+
+# IDE config
+.idea/
+.git

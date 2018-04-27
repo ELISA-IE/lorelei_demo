@@ -13,7 +13,7 @@ def ltftab2bio(ltf_root, tab_str):
     # check label offset
     for l in labels:
         try:
-            mention, start_char, end_char, mention_type = l
+            mention, start_char, end_char, mention_type, kbid = l
             assert doc_text[start_char:end_char+1] == mention, \
                 "mention offset error in %s %s" % (doc_id, l)
         except AssertionError as e:
@@ -90,6 +90,7 @@ def ltftab2bio(ltf_root, tab_str):
             # get token bio tag
             if t_start_char in label_offset_mapping.keys():
                 entity_type = label_offset_mapping[t_start_char][3]
+                kbid = label_offset_mapping[t_start_char][4]
                 if t_start_char == label_offset_mapping[t_start_char][1] or j == 0:
                     tag = '%s-%s' % ('B', entity_type)
                     b_tags.add(t_start_char)
@@ -97,11 +98,12 @@ def ltftab2bio(ltf_root, tab_str):
                     tag = '%s-%s' % ('I', entity_type)
             else:
                 tag = 'O'
-
+                kbid = 'O'
             sent_res.append(' '.join([t_text,
                                       '%s:%d-%d' % (doc_id,
                                                     t_start_char,
                                                     t_end_char),
+                                      kbid,
                                       tag]))
 
         res.append('\n'.join(sent_res))
@@ -180,6 +182,7 @@ def parse_label(tab_str):
             start_char, end_char = offset.split("-")
             start_char, end_char = int(start_char), int(end_char)
             mention_type = line[5]
+            kbid = line[4]
 
             # check overlap labels
             overlapped_chars = char_offset.intersection(
@@ -193,7 +196,7 @@ def parse_label(tab_str):
                     if not set(range(l[1], l[2]+1)).intersection(overlapped_chars):
                         continue
                     if l[2]-l[1]+1 < end_char-start_char+1:
-                        tmp = (mention, start_char, end_char, mention_type)
+                        tmp = (mention, start_char, end_char, mention_type, kbid)
                         labels[i] = tmp
                         char_offset = char_offset.union(set(range(start_char,
                                                                   end_char+1)))
@@ -202,7 +205,7 @@ def parse_label(tab_str):
                 char_offset = char_offset.union(set(range(start_char,
                                                           end_char+1)))
 
-            labels.append((mention, start_char, end_char, mention_type))
+            labels.append((mention, start_char, end_char, mention_type, kbid))
 
             counter['num_labels'] += 1
         except Exception as e:

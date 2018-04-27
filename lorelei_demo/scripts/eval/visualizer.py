@@ -243,6 +243,25 @@ def write2file(html_result, out_dir, rank):
             f.write(html)
 
 
+def to_bio(bio_str, no_ref):
+    rtn = []
+    for sent in bio_str.split('\n\n'):
+        s = []
+        for w in sent.splitlines():
+            items = w.split()
+            items[-1] = items[-1].replace('E-', 'I-')
+            items[-1] = items[-1].replace('S-', 'B-')
+            if no_ref:
+                pass
+            else:
+                items[-2] = items[-2].replace('E-', 'I-')
+                items[-2] = items[-2].replace('S-', 'B-')
+            s.append(' '.join(items))
+        rtn.append('\n'.join(s))
+
+    return '\n\n'.join(rtn)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("bio")
@@ -261,16 +280,22 @@ if __name__ == "__main__":
     parser.add_argument('--no_offset', action='store_true', default=False,
                         help='tokenize file with space, 20 sentences per '
                              'document')
+    parser.add_argument('--bioes', action='store_true', default=False,
+                        help='option for bioes scheme')
 
     args = parser.parse_args()
 
     print("=> loading bio data...")
     bio_str = codecs.open(args.bio, 'r', 'utf-8').read()
+    if args.bioes:
+        # convert bioes scheme to bio
+        bio_str = to_bio(bio_str, args.no_ref)
 
     # generate offsets if no offset provided
-    d_id = os.path.basename(args.bio).replace('.bio', '')
-    bio_offset = bio2bio_offset(bio_str, d_id, split=20)
-    bio_str = '\n\n'.join(list(bio_offset.values()))
+    if args.no_offset:
+        d_id = os.path.basename(args.bio).replace('.bio', '')
+        bio_offset = bio2bio_offset(bio_str, d_id, split=20)
+        bio_str = '\n\n'.join(list(bio_offset.values()))
 
     #
     # load lexicon

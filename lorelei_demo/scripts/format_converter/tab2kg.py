@@ -6,7 +6,7 @@ from collections import OrderedDict
 def tab2kg(tab_string):
     kg = KnowledgeGraph()
     entities = OrderedDict()
-    for line in tab_string.splitlines():
+    for line in tab_string.strip().splitlines():
         line = line.split('\t')
         entity_mention_head = line[2]
         entity_mention_offset = line[3]

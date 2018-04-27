@@ -105,14 +105,14 @@ if __name__ == '__main__':
         for i in sorted(names_a - names_b,
                         key=lambda x: count_mention(m2type_a[x]),
                         reverse=True):
-            fw.write('%s\t%s\n' % (i, m2type_a[i]))
+            fw.write('%s\t%s\t%s\n' % (i, dict(m2type_a[i]), m2trans_a[i]))
 
     with open('%s/b-a' % args.outdir, 'w') as fw:
         fw.write('b - a: %s\n' % len(names_b - names_a))
         for i in sorted(names_b - names_a,
                         key=lambda x: count_mention(m2type_b[x]),
                         reverse=True):
-            fw.write('%s\t%s\n' % (i, m2type_b[i]))
+            fw.write('%s\t%s\t%s\n' % (i, dict(m2type_b[i]), m2trans_b[i]))
 
     with open('%s/a' % args.outdir, 'w') as fw:
         for i in sorted(m2type_a,

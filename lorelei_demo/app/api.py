@@ -21,6 +21,7 @@ from lorelei_demo.app import lorelei_demo_dir
 from lorelei_demo.app.geo_name import GeoName
 from lorelei_demo.app.visualization.edl_err_ana import visualize_single_doc_without_gold
 from lorelei_demo.app.visualization.edl_err_ana import visualize_single_doc_with_gold
+from lorelei_demo.app.ner_wrapper import multithread_tagger
 import json
 import tempfile
 import re
@@ -84,6 +85,9 @@ def entity_discovery_and_linking(identifier):
     """
     language_code = identifier
 
+    # get input format
+    input_format = request.args.get('input_format')
+
     # get output format
     output_format = request.args.get('output_format')
 
@@ -91,18 +95,22 @@ def entity_discovery_and_linking(identifier):
     if not is_valid_identifier(identifier):
         return "Invalid language code."
 
-    # get plain text input
-    plain_text_input = request.form.get('text')
+    # get text input
+    text_input = request.data.decode('utf-8')
 
-    # run ner
-    tab_str = edl_plain_text(language_code, plain_text_input)
+    if input_format == 'plain text':
+        # run ner
+        tab_str = edl_plain_text(language_code, text_input)
 
-    if output_format == 'EvalTab':
-        result = tab_str
-    elif output_format == 'KnowledgeGraph':
-        result = tab2kg(tab_str)
-    else:
-        result = 'Please choose name tagging output format.'
+        if output_format == 'EvalTab':
+            result = tab_str
+        elif output_format == 'KnowledgeGraph':
+            result = tab2kg(tab_str)
+        else:
+            result = 'Please choose name tagging output format.'
+
+    elif input_format == 'NIF':
+        result = edl_nif(language_code, text_input)
 
     return result
 
@@ -144,6 +152,20 @@ def entity_linking(identifier):
     linking_result = entity_linking_with_query(query, identifier, type)
 
     return jsonify(linking_result)
+
+
+@bp_api.route("/elisa_ie/entity_linking_amr", methods=["POST"])
+def entity_linking_amr():
+    # get amr text input
+    amr_text_input = request.data.decode('utf-8')
+
+    url = 'http://blender02.cs.rpi.edu:3301/linking_amr'
+
+    payload = {'amr_str': amr_text_input}
+
+    r = requests.post(url, data=payload)
+
+    return r.text
 
 
 @bp_api.route("/elisa_ie/localize/<identifier>", methods=['GET'])
@@ -300,30 +322,7 @@ def edl_plain_text(language_code, plain_text, to_visualize=False):
         # text normalization
         plain_text = plain_text.replace("\r\n", "\n").replace("\r", "\n")
 
-        # convert plain text to bio format
-        seg_option_selection = {
-            'cmn': ['cdo', 'gan', 'hak', 'wuu', 'zh', 'zh-classical',
-                    'zh-min-nan']
-        }
-        seg_option_selection = {item: k for k, v in
-                                seg_option_selection.items() for item in v}
-        try:
-            seg_option = seg_option_selection[language_code]
-        except KeyError:
-            seg_option = 'nltk+linebreak'
-
-        tok_option_selection = {
-            'jieba': ['cdo', 'gan', 'hak', 'wuu', 'zh', 'zh-classical',
-                      'zh-min-nan']
-        }
-        tok_option_selection = {item: k for k, v in
-                                tok_option_selection.items() for item in v }
-        try:
-            tok_option = tok_option_selection[language_code]
-        except KeyError:
-            tok_option = 'unitok'
-
-        bio_str = rsd2bio(plain_text, doc_id, seg_option, tok_option)
+        bio_str = plain_text2bio(plain_text, doc_id, language_code)
 
     # make temp file for input and output bio
     input_bio_file = tempfile.mktemp()
@@ -334,19 +333,18 @@ def edl_plain_text(language_code, plain_text, to_visualize=False):
     #
     # run dnn name tagger
     #
-    ner_bio_result = run_ner(language_code, input_bio_file, output_tab_file)
+    ner_bio_result = run_pytorch_ner(language_code, input_bio_file, output_tab_file)
 
     print('running linking...')
     try:
-        edl_tab_result = entity_linking_with_bio(ner_bio_result, language_code)
-        tab_str = edl_tab_result.text
+        tab_str = entity_linking_with_bio(ner_bio_result, language_code)
     except:
         tab_str = bio2tab(ner_bio_result)
 
     if to_visualize:
         if not tab_str.strip():
             visualization_html = \
-                '<span style="color:red;">No name found.</span>'
+                '<span style="color:red;">No name is found.</span>'
             tab_str = 'No name found.'
         else:
             # create sys tab
@@ -399,6 +397,39 @@ def edl_plain_text(language_code, plain_text, to_visualize=False):
         return tab_str
 
 
+def edl_nif(language_code, nif_str):
+    nil_context, url = nif2bio(nif_str)
+
+    if not nil_context or not url:
+        return "Invalid NIF string, or no context is found."
+
+    bio_str = plain_text2bio(nil_context, 'nif', language_code)
+
+    # make temp file for input and output bio
+    input_bio_file = tempfile.mktemp()
+    with open(input_bio_file, 'w', encoding="utf8") as f:
+        f.write(bio_str)
+    output_tab_file = tempfile.mktemp()
+
+    #
+    # run dnn name tagger
+    #
+    ner_bio_result = run_pytorch_ner(language_code, input_bio_file, output_tab_file)
+
+    print('running linking...')
+    try:
+        tab_str = entity_linking_with_bio(ner_bio_result, language_code)
+    except:
+        tab_str = bio2tab(ner_bio_result)
+
+    # convert tab str NIF output file
+    result_in_nif = tab2nif(url, tab_str)
+
+    result_in_nif = nif_str.strip() + '\n\n' + result_in_nif
+
+    return result_in_nif
+
+
 def is_valid_identifier(identifier):
     supported_languages = get_status()
 
@@ -410,15 +441,20 @@ def is_valid_identifier(identifier):
 
 def get_status():
     # check model directory to get online and offline languages
-    model_dir = os.path.join(lorelei_demo_dir, 'data/name_tagger/models')
+    model_dir = os.path.join(lorelei_demo_dir, 'data/name_tagger/pytorch_models')
     languages = [item for item in os.listdir(model_dir) if
                  item != '.DS_Store']
 
     online_languages = []
     offline_languages = []
     for lan in languages:
-        model_dp = os.path.join(model_dir, lan, 'model')
-        if os.path.exists(model_dp):
+        online = False
+        model_dp = os.path.join(model_dir, lan)
+        for root, d, f in os.walk(model_dp):
+            if 'best_model.pth.tar' in f:
+                online = True
+                break
+        if online:
             online_languages.append(lan)
         else:
             offline_languages.append(lan)
@@ -459,8 +495,65 @@ def get_status():
 #
 # run name tagger methods
 #
+# run pytorch tagger
+def run_pytorch_ner(language_code, input_file, ouput_file):
+    print('=> running pytorch dnn name tagger...')
+
+    from lorelei_demo.app import models
+    from lorelei_demo.app.model_preload import pytorch_tag
+
+    if language_code in models:
+        ner_bio_file = tempfile.mktemp()
+
+        f_eval, parameters, mapping = models[language_code]
+        pytorch_tag(input_file, ner_bio_file, f_eval, parameters, mapping)
+    else:
+        # run pytorch tagger
+        model_dir = os.path.join(
+            lorelei_demo_dir, 'data/name_tagger/pytorch_models/%s/' % language_code
+        )
+        model_path = None
+        for root, d, f in os.walk(model_dir):
+            if 'best_model.pth.tar' in f:
+                model_path = os.path.join(root, 'best_model.pth.tar')
+                break
+        assert model_path, '%s pretrained model not found.' % language_code
+
+        ner_bio_file = tempfile.mktemp()
+
+        multithread_tagger(input_file, ner_bio_file, model_path, 1, True)
+
+    # convert bio result to tab
+    ner_tab = bio2tab(open(ner_bio_file, encoding="utf8").read())
+    with open(ouput_file, 'w', encoding="utf8") as f:
+        if ner_tab.strip():
+            f.write(ner_tab)
+
+    # Uyghur post-processing
+    if language_code == 'ug':
+        print('=> running xiaoman uig post processing...')
+        pp_dir = os.path.join(
+            lorelei_demo_dir,
+            'lorelei_demo/name_tagger/post_processing/xiaoman_pp/il3/'
+        )
+        pp_script = os.path.join(pp_dir, 'post_processing.py')
+        cmd = ['python3', pp_script,
+               ner_bio_file,
+               ouput_file,
+               ouput_file,
+               '--ppsm', os.path.join(pp_dir, 'psm_flat_setE'),
+               '--pgaz', os.path.join(pp_dir, 'high_confidence.gaz'),
+               '--prule', os.path.join(pp_dir, 'il3.rule'),
+               ]
+        print(' '.join(cmd))
+        subprocess.call(cmd)
+
+    return open(ner_bio_file).read()
+
+
+# run theano tagger
 def run_ner(language_code, input_file, ouput_file):
-    print('=> running dnn name tagger...')
+    print('=> running theano dnn name tagger...')
 
     from lorelei_demo.app import models
     from lorelei_demo.app.model_preload import inference
@@ -534,9 +627,101 @@ def entity_linking_with_query(query, language, type):
 
 
 def entity_linking_with_bio(bio_str, language):
-    tab = requests.post('http://blender02.cs.rpi.edu:3301/linking_bio',
-                        data={'bio_str': bio_str,
-                              'lang': language},
-                        timeout=2
-                        )
-    return tab
+    url = 'http://blender02.cs.rpi.edu:3301/linking_bio'
+    payload = {'bio_str': bio_str, 'lang': language}
+    r = requests.post(url, data=payload)
+
+    return r.text
+
+
+def entity_linking_amr(amr_str):
+    url = 'http://blender02.cs.rpi.edu:3301/linking_amr'
+    payload = {'amr_str': amr_str}
+    r = requests.post(url, data=payload)
+
+    return r.text
+
+
+def nif2bio(nif_str):
+    paragraphs = [p.strip() for p in nif_str.strip().split("\n\n") if p.strip()]
+
+    # retrieve context
+    nif_context = None
+    url = None
+    for p in paragraphs:
+        if p.startswith('@'):
+            continue
+        lines = p.splitlines()
+        url = lines[0][1:-1].split('#')[0]
+        a_line = lines[1].strip()
+        attr_str = [item.strip() for item in a_line[1:-1].strip().split(',')]
+        attrs = []
+        for a in attr_str:
+            attrs.append(a.split(':')[1])
+        if 'String' in attrs and 'Context' in attrs:
+            nif_context = re.search(r'"""(.*?)"""', lines[2]).group(1)
+            break
+
+    return nif_context, url
+
+
+def plain_text2bio(plain_text, doc_id, language_code):
+    # convert plain text to bio format
+    seg_option_selection = {
+        'cmn': ['cdo', 'gan', 'hak', 'wuu', 'zh', 'zh-classical',
+                'zh-min-nan']
+    }
+    seg_option_selection = {item: k for k, v in
+                            seg_option_selection.items() for item in v}
+    try:
+        seg_option = seg_option_selection[language_code]
+    except KeyError:
+        seg_option = 'nltk+linebreak'
+
+    tok_option_selection = {
+        'jieba': ['cdo', 'gan', 'hak', 'wuu', 'zh', 'zh-classical',
+                  'zh-min-nan']
+    }
+    tok_option_selection = {item: k for k, v in
+                            tok_option_selection.items() for item in v}
+    try:
+        tok_option = tok_option_selection[language_code]
+    except KeyError:
+        tok_option = 'unitok'
+
+    bio_str = rsd2bio(plain_text, doc_id, seg_option, tok_option)
+
+    return bio_str
+
+
+def tab2nif(url, tab_str):
+    template = """<http://dbpedia.org/resource/Leipzig/abstract#offset_%s_%s>
+\ta nif:String, nif:OffsetBasedString ;
+\tnif:referenceContext <%s#offset_%s_%s> ;
+\tnif:anchorOf \"\"\"%s\"\"\"^^xsd:string ;
+\tnif:beginIndex "%s"^^xsd:nonNegativeInteger ;
+\tnif:endIndex "%s"^^xsd:nonNegativeInteger ;
+\tnif:entityType \"\"\"%s\"\"\"^^xsd:string ;
+\ta nif:%s ;
+\titsrdf:taIdentRef <http://dbpedia.org/resource/%s>"""
+    result = []
+    for line in tab_str.splitlines():
+        items = line.split('\t')
+        name = items[2]
+        start_char = items[3].split(':')[1].split('-')[0]
+        end_char = items[3].split(':')[1].split('-')[1]
+        kb_id = items[4]
+        if '_' in kb_id:
+            kb_id_type = 'Phrase'
+        else:
+            kb_id_type = 'Word'
+        etype = items[5]
+        result.append(template % (
+            start_char, end_char, url, start_char, end_char, name,
+            start_char, end_char,
+            etype,
+            kb_id_type,
+            kb_id
+        ))
+
+    return '\n\n'.join(result)

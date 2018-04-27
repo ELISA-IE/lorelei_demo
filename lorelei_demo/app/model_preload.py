@@ -8,18 +8,155 @@ import numpy as np
 
 # add name tagger module path to PATH
 import lorelei_demo.name_tagger.theano
-name_tagger_path = os.path.dirname(lorelei_demo.name_tagger.theano.__file__)
-sys.path.insert(0, name_tagger_path)
+import lorelei_demo.name_tagger.dnn_pytorch
+theano_tagger_path = os.path.dirname(lorelei_demo.name_tagger.theano.__file__)
+pytorch_tagger_path = os.path.dirname(lorelei_demo.name_tagger.dnn_pytorch.__file__)
+sys.path.insert(0, theano_tagger_path)
+sys.path.insert(0, pytorch_tagger_path)
 
 from lorelei_demo.name_tagger.theano.loader import prepare_sentence, load_sentences
 from lorelei_demo.name_tagger.theano.utils import create_input, iobes_iob, zero_digits
 from lorelei_demo.name_tagger.theano.model import Model
 from lorelei_demo.name_tagger.theano.external_feats.generate_features import generate_features
 
+import torch
+from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.nn import SeqLabeling
+from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.loader import prepare_dataset, load_sentences
+from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.utils import create_input, iobes_iob
+
 from lorelei_demo.app import lorelei_demo_dir
-from lorelei_demo.app.api import get_status
 
 
+#
+# pytorch taggers
+#
+def pytorch_preload(status):
+    models = {}
+
+    for lang_code, s in list(status.items())[:]:
+        # if lang_code not in ['ar', 'am', 'fa', 'ha', 'hu', 'so', 'tr', 'uz', 'vi', 'yo', 'ti', 'om']:
+        #     continue
+        if s[1] == 'online':
+            model_dir = os.path.join(
+                lorelei_demo_dir,
+                'data/name_tagger/pytorch_models/%s/' % lang_code
+            )
+            model_path = None
+            for root, d, f in os.walk(model_dir):
+                if 'best_model.pth.tar' in f:
+                    model_path = os.path.join(root, 'best_model.pth.tar')
+                    break
+            assert model_path, '%s model path not exists' % lang_code
+
+            print("=> Preloading model for %s" % lang_code)
+            models[lang_code] = pytorch_load_model(model_path)
+
+    print('%d models are preloaded:' % len(models))
+    print(', '.join(list(models.keys())))
+    return models
+
+
+def pytorch_load_model(model_path):
+    # Load existing model
+    state = torch.load(model_path, map_location=lambda storage, loc: storage)
+
+    parameters = state['parameters']
+    mappings = state['mappings']
+
+    # Load reverse mappings
+    word_to_id, char_to_id, tag_to_id = [
+        {v: k for k, v in x.items()}
+        for x in [mappings['id_to_word'], mappings['id_to_char'],
+                  mappings['id_to_tag']]
+        ]
+    feat_to_id_list = [
+        {v: k for k, v in id_to_feat.items()}
+        for id_to_feat in mappings['id_to_feat_list']
+        ]
+
+    mappings.update(
+        {'word_to_id': word_to_id,
+         'char_to_id': char_to_id,
+         'tag_to_id': tag_to_id,
+         'feat_to_id_list': feat_to_id_list}
+    )
+
+    # initialize model
+    model = SeqLabeling(parameters)
+    model.load_state_dict(state['state_dict'])
+    model.train(False)
+
+    return model, parameters, mappings
+
+
+def pytorch_tag(input, output, model, parameters, mappings):
+    word_to_id = mappings['word_to_id']
+    char_to_id = mappings['char_to_id']
+    tag_to_id = mappings['tag_to_id']
+    id_to_tag = mappings['id_to_tag']
+    feat_to_id_list = mappings['feat_to_id_list']
+
+    # eval sentences
+    eval_sentences = load_sentences(
+        input,
+        parameters['lower'],
+        parameters['zeros']
+    )
+
+    eval_dataset = prepare_dataset(
+        eval_sentences, parameters['feat_column'],
+        word_to_id, char_to_id, tag_to_id, feat_to_id_list, parameters['lower'],
+        is_train=False
+    )
+
+    # tagging
+    since = time.time()
+    batch_size = parameters['batch_size']
+    f_output = open(output, 'w')
+
+    # Iterate over data.
+    print('tagging...')
+    for i in range(0, len(eval_dataset), batch_size):
+        inputs = create_input(eval_dataset[i:i + batch_size], parameters,
+                              add_label=False)
+
+        # forward
+        outputs, loss = model.forward(inputs)
+
+        seq_index_mapping = inputs['seq_index_mapping']
+        seq_len = inputs['seq_len']
+        if parameters['crf']:
+            preds = [outputs[seq_index_mapping[j]].data
+                     for j in range(len(outputs))]
+        else:
+            _, _preds = torch.max(outputs.data, 2)
+
+            preds = [
+                _preds[seq_index_mapping[j]][:seq_len[seq_index_mapping[j]]]
+                for j in range(len(seq_index_mapping))
+                ]
+        for j, pred in enumerate(preds):
+            pred = [id_to_tag[p] for p in pred]
+            # Output tags in the IOB2 format
+            if parameters['tag_scheme'] == 'iobes':
+                pred = iobes_iob(pred)
+            # Write tags
+            assert len(pred) == len(eval_sentences[i + j])
+            f_output.write('%s\n\n' % '\n'.join('%s%s%s' % (' '.join(w), ' ', z)
+                                                for w, z in
+                                                zip(eval_sentences[i + j],
+                                                    pred)))
+            if (i + j + 1) % 500 == 0:
+                print(i + j + 1)
+
+    end = time.time()  # epoch end time
+    print('time elapssed: %f seconds' % round(
+        (end - since), 2))
+
+
+#
+# theano taggers
+#
 def preload_models():
     status = get_status()
 

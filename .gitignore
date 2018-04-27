@@ -1,8 +1,13 @@
 **/.DS_Store
 **/*.pyc
 .idea/
-#data/name_tagger/
+data/name_tagger/
+data/app/elisa_ie
 
+lorelei_demo/scripts
+lorelei_demo/name_tagger/dnn_pytorch/
+
+# ignore transliteration data
 lorelei_demo/transliteration/data
 lorelei_demo/scripts/.git
 lorelei_demo/name_tagger/theano/.git

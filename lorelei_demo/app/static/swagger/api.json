@@ -23,17 +23,82 @@
         "application/json"
     ],
     "paths": {
+        "/entity_discovery_and_linking/{identifier}": {
+            "post": {
+                "tags": [
+                    "run"
+                ],
+                "summary": "main entry of the ELISA EDL system",
+                "description": "Main entry of the ELISA EDL system. Take input in either plain text of *.ltf format, tag names that are PERSON, ORGANIZATION or LOCATION, and links them to Wikipedia.",
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "path",
+                        "description": "language code",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "text",
+                        "in": "body",
+                        "description": "plain text",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "input_format",
+                        "in": "query",
+                        "required": true,
+                        "type": "array",
+                        "items":{
+                            "type":"string",
+                            "enum":["plain text", "NIF"],
+                            "default":"plain text"
+                        },
+                        "description":"(1) tokenized or untokenized plain text, (2) ELISA xml, (3) NIF (Natural Language Interchange Format)"
+                    },
+                    {
+                        "name": "output_format",
+                        "in": "query",
+                        "required": true,
+                        "type": "array",
+                        "items":{
+                            "type":"string",
+                            "enum":["KnowledgeGraph", "EvalTab", "NIF"],
+                            "default":"KnowledgeGraph"
+                        },
+                        "description":"(1) KnowledgeGraph: a pre-defined JSON knowledge graph, (2) EvalTab: NIST LORELEI evaluation format, (3) NIF (Natural Language Interchange Format)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "(1) A JSON string of knowledge graph or (2) A string in EvalTab format.",
+                        "schema": {
+                            "$ref": "#/definitions/KnowledgeGraph"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
         "/status": {
             "get": {
                 "summary": "get server status",
-                "description": "returns a list of supported languages and the status of models.",
+                "description": "Retrieve the current server status, including supported languages, language identifiers, and the state (offline, online, or pending) of each model.",
                 "tags": [
                     "run",
                     "train"
                 ],
                 "responses": {
                     "200": {
-                        "description": "returns a list of supported languages and the status of models.",
+                        "description": "A JSON string presents a list of supported language identifiers and model status.",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -57,7 +122,7 @@
                     "train"
                 ],
                 "summary": "get server status for a language",
-                "description": "returns the model status for a language.",
+                "description": "Retrieve the current status of the given language.",
                 "parameters": [
                     {
                         "name": "identifier",
@@ -69,7 +134,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "returns the model status for a language.",
+                        "description": "A JSON string contains the model status of the given language identifier.",
                         "schema": {
                             "$ref": "#/definitions/Status"
                         }
@@ -90,7 +155,7 @@
                 ],
                 "consumes": ["multipart/form-data"],
                 "summary": "train a model",
-                "description": "train a DNN name tagger model for a language",
+                "description": "Train a new name tagging model for a language.",
                 "parameters": [
                     {
                         "name": "identifier",
@@ -130,66 +195,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Model is successfully trained."
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/entity_discovery_and_linking/{identifier}": {
-            "post": {
-                "tags": [
-                    "run"
-                ],
-                "consumes": ["multipart/form-data"],
-                "summary": "run the entity discovery and linking system",
-                "description": "returns the ELISA IE result of a text document.",
-                "parameters": [
-                    {
-                        "name": "identifier",
-                        "in": "path",
-                        "description": "language code",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "text",
-                        "in": "formData",
-                        "description": "plain text",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "elisa_xml",
-                        "in": "formData",
-                        "description": "ELISA xml file",
-                        "required": false,
-                        "type": "file"
-                    },
-                    {
-                        "name": "output_format",
-                        "in": "query",
-                        "required": true,
-                        "type": "array",
-                        "items":{
-                            "type":"string",
-                            "enum":["KnowledgeGraph", "EvalTab"],
-                            "default":"KnowledgeGraph"
-                        },
-                        "description":"the format of name tagging result: (1)KnowledgeGraph: a knowledge graph format in JSON. (2) EvalTab: NIST LORELEI evaluation format."
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "the format of name tagging result: (1)KnowledgeGraph: a knowledge graph format in JSON. (2) EvalTab: NIST LORELEI evaluation format.",
-                        "schema": {
-                            "$ref": "#/definitions/KnowledgeGraph"
-                        }
+                        "description": "A model id is automatically generated based on model name, and time stamp."
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -204,7 +210,7 @@
             "get": {
                 "tags": ["run"],
                 "summary": "name transliteration",
-                "description": "name transliteration",
+                "description": "Transliterate a name to Latin script.",
                 "parameters": [
                     {
                         "name": "identifier",
@@ -223,7 +229,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "name transliteration result in JSON"
+                        "description": "A JSON string of the name transliteration result."
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -238,7 +244,7 @@
             "get": {
                 "tags": ["run"],
                 "summary": "query based entity linking",
-                "description": "link the query to an entity in KB (Wikipedia)",
+                "description": "Query based entity linking. Link the name to Wikipedia.",
                 "parameters": [
                     {
                         "name": "identifier",
@@ -257,14 +263,47 @@
                     {
                         "name": "type",
                         "in": "query",
-                        "description": "entity type: PER ORG GPE (optional)",
+                        "description": "entity type (PER, ORG or GPE) of the name to improve linking accuracy",
                         "required": false,
                         "type": "string"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "entity linking results in JSON"
+                        "description": "The Wikipedia title (KB id) of the queried name. If it’s not in KB, return NIL."
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/entity_linking_amr": {
+            "post": {
+                "tags": [
+                    "run"
+                ],
+                "consumes":["application/json","application/xml"],
+                "summary": "run the entity linking API using AMR input",
+                "description": "English entity linking for AMR style input. Abstract Meaning Representation (AMR) is a structured semantic representation scheme. The rich semantic knowledge in AMR boosts linking performance.",
+                "parameters": [
+                    {
+                        "name": "amr_str",
+                        "in": "body",
+                        "description": "AMR string parsed from a document.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "binary"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A string in EvalTab format (NIST LORELEI evaluation format)."
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -279,7 +318,7 @@
             "get": {
                 "tags": ["run"],
                 "summary": "name localization",
-                "description": "name localization",
+                "description": "Localize a LOC name based on GeoName database.",
                 "parameters": [
                     {
                         "name": "identifier",
@@ -298,7 +337,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "name latitude and longitude in JSON"
+                        "description": "A JSON string includes the longitude and latitude of the location."
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -414,18 +453,18 @@
                         "type": "array",
                         "description": "array of size 2, first element is the translation and the second is confidence score",
                         "items": {
-                          "type": ["string", "number"]
+                            "type": ["string", "number"]
                         }
                     }
                 },
                 "transliterations": {
-                  "description": "a list of English transliterations of the entity mention",
+                    "description": "a list of English transliterations of the entity mention",
                     "type": "array",
                     "items": {
                         "type": "array",
                         "description": "array of size 2, first element is the transliteration and the second is confidence score",
                         "items": {
-                          "type": ["string", "number"]
+                            "type": ["string", "number"]
                         }
                     }
                 }
@@ -567,6 +606,14 @@
                     "format": "int32"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "EDLInput": {
+            "type": "object",
+            "properties": {
+                "input": {
                     "type": "string"
                 }
             }

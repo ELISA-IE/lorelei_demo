@@ -22,10 +22,10 @@ def elisa2bio(elisa_root):
                 seg_src_end_char = int(seg_src.get('end_char'))
                 seg_src_orig_raw = seg_src.find('ORIG_RAW_SOURCE').text
                 # use orig_raw as tokenized text if not tokenization founds
-                if seg_src.find('LRLP_TOKENIZED_SOURCE') is None:
+                if seg_src.find('LRLP_TOKENIZED_RAW_SOURCE') is None:
                     seg_src_tokenized = seg_src_orig_raw
                 else:
-                    seg_src_tokenized = seg_src.find('LRLP_TOKENIZED_SOURCE').text
+                    seg_src_tokenized = seg_src.find('LRLP_TOKENIZED_RAW_SOURCE').text
                 # ignore empty token here
                 seg_src_tokenized = [item
                                      for item in seg_src_tokenized.split(' ')
