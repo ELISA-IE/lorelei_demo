@@ -62,3 +62,6 @@ def get_data():
             'type': 'FeatureCollection',
             'features': features
         })
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=9997, debug=True, threaded=True)

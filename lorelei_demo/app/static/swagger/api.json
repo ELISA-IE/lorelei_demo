@@ -1,27 +1,31 @@
 {
     "swagger": "2.0",
-    "tags": [
-        {
-            "name": "run",
-            "description": "for runtime"
-        },
-        {
-            "name": "train",
-            "description": "for training"
-        }
-    ],
     "info": {
         "title": "ELISA Information Extraction",
-        "description": "APIs for extracting information from text documents in low-resource languages.",
-        "version": "1.0.0"
+        "description": "ELISA Entity Discovery and Linking API for 282 languages. If you are using this API, please cite our papers:  <a href='https://aclweb.org/anthology/P/P17/P17-1178.pdf' target='_blank'>Cross-lingual Name Tagging and Linking for 282 Languages</a>, and <a href='http://nlp.cs.rpi.edu/paper/naacldemo2018.pdf' target='_blank'>ELISA-EDL: A Cross-lingual Entity Extraction, Linking and Localization System</a>.",
+        "version": "1.0.0",
+        "contact": {
+            "email": "zhangb8@rpi.edu"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
     },
     "schemes": [
         "http"
     ],
-    "basePath": "/elisa_ie",
-    "produces": [
-        "application/json"
+    "tags": [
+        {
+            "name": "run",
+            "description": "APIs for runtime"
+        },
+        {
+            "name": "train",
+            "description": "APIs for training"
+        }
     ],
+    "basePath": "/elisa_ie",
     "paths": {
         "/entity_discovery_and_linking/{identifier}": {
             "post": {
@@ -29,7 +33,14 @@
                     "run"
                 ],
                 "summary": "main entry of the ELISA EDL system",
-                "description": "Main entry of the ELISA EDL system. Take input in either plain text of *.ltf format, tag names that are PERSON, ORGANIZATION or LOCATION, and links them to Wikipedia.",
+                "description": "The API takes in plain text or bio formatted strings, and tags PERSON, ORGANIZATION or LOCATION names in the document. At last, it links the names to Wikipedia.",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "text/plain",
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "identifier",
@@ -39,9 +50,9 @@
                         "type": "string"
                     },
                     {
-                        "name": "text",
+                        "name": "input",
                         "in": "body",
-                        "description": "plain text",
+                        "description": "The EDL input in plain_text or bio format.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -54,10 +65,10 @@
                         "type": "array",
                         "items":{
                             "type":"string",
-                            "enum":["plain text", "NIF"],
-                            "default":"plain text"
+                            "default":"plain_text",
+                            "enum":["plain_text", "bio", "ltf"]
                         },
-                        "description":"(1) tokenized or untokenized plain text, (2) ELISA xml, (3) NIF (Natural Language Interchange Format)"
+                        "description":"(1)plain text, (2) BIO formatted strings, (3) LDC ltf formatted string."
                     },
                     {
                         "name": "output_format",
@@ -66,18 +77,29 @@
                         "type": "array",
                         "items":{
                             "type":"string",
-                            "enum":["KnowledgeGraph", "EvalTab", "NIF"],
-                            "default":"KnowledgeGraph"
+                            "default":"EvalTab",
+                            "enum":["EvalTab", "KnowledgeGraph"]
                         },
-                        "description":"(1) KnowledgeGraph: a pre-defined JSON knowledge graph, (2) EvalTab: NIST LORELEI evaluation format, (3) NIF (Natural Language Interchange Format)"
+                        "description":"(1) EvalTab: NIST LORELEI/KBP evaluation format, (2) KnowledgeGraph: a pre-defined JSON knowledge graph"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "(1) A JSON string of knowledge graph or (2) A string in EvalTab format.",
-                        "schema": {
-                            "$ref": "#/definitions/KnowledgeGraph"
+                        "description": "successful operation",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "eval tab"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/KnowledgeGraph"
+                                }
+                            }
                         }
+
                     },
                     "default": {
                         "description": "Unexpected error",

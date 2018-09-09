@@ -1,14 +1,14 @@
-FROM python:3
+FROM python:3.6
 
 MAINTAINER Boliang Zhang "zhangb8@rpi.edu"
 
 WORKDIR /usr/src/app
 
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install nltk sentence segmentation model
-RUN python3 -m nltk.downloader -d ./nltk_data punkt
+RUN python3 -m nltk.downloader -d /usr/local/nltk_data punkt
 
 COPY data ./data
 COPY lorelei_demo ./lorelei_demo
@@ -39,7 +39,8 @@ CMD ["/usr/src/app/lorelei_demo/run.py"]
 #
 # build docker
 #
-# docker build -t zhangb8/lorelei .
+# docker build -t elisarpi/elisa-ie .
+# docker push elisarpi/elisa-ie
 
 #
 # NER model overview:

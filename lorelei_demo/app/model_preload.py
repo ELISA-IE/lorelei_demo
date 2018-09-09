@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import torch
 import os
 import sys
 import time
@@ -19,7 +20,6 @@ from lorelei_demo.name_tagger.theano.utils import create_input, iobes_iob, zero_
 from lorelei_demo.name_tagger.theano.model import Model
 from lorelei_demo.name_tagger.theano.external_feats.generate_features import generate_features
 
-import torch
 from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.nn import SeqLabeling
 from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.loader import prepare_dataset, load_sentences
 from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.utils import create_input, iobes_iob

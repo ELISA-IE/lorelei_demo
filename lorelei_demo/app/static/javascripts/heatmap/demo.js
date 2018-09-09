@@ -2,17 +2,18 @@
  * Author: Ying Lin
  * Date: Aug 31, 2017
  */
-var DATA_SOURCE = '/elisa_ie/data';
+var DATA_SOURCE = '/data';
 var loading_div = $('#loading');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGltdGVuZyIsImEiOiJjajJjcGdzNjUwM2NkMndvNzBpeTBrZjFwIn0.9YDJZ3qB_VuNHF3L-ni6PQ';
 var map = new mapboxgl.Map({
-    minZoom: 2,
+    minZoom: 3,
     maxZoom: 15,
     container: 'map-wrapper',
     style: 'mapbox://styles/mapbox/dark-v9'
 });
-
+// var nav = new mapboxgl.NavigationControl();
+// map.addControl(nav, 'bottom-right');
 
 function initialize_map() {
     // Load icons
@@ -55,6 +56,10 @@ function initialize_map() {
     map.loadImage('/static/images/heatmap/icon_crime.png', function (error, image) {
         if (error) throw error;
         map.addImage('crime', image);
+    });
+    map.loadImage('/static/images/heatmap/icon_regime.png', function (error, image) {
+        if (error) throw error;
+        map.addImage('regime', image);
     });
     // map.addLayer({
     //     'id': '3d-buildings',
@@ -118,6 +123,7 @@ function initialize_map() {
                         ['Chinese', 'rgb(192, 192, 192)'],
                         ['Spanish', 'rgb(204, 153, 255)'],
                         ['Uyghur', 'rgb(199, 187, 231)'],
+                        ['French', 'rgb(199, 187, 231)'],
                     ]
 
                 },
@@ -150,11 +156,13 @@ function initialize_map() {
                         ['Shelter', 'shelter'],
                         ['Search and Rescue', 'rescue'],
                         ['Civil Unrest or Wide-spread Crime', 'crime'],
-                        ['Infrastructure', 'infrastructure']
+                        ['Infrastructure', 'infrastructure'],
+                        ['Regime Change', 'regime']
                     ]
                 },
                 'icon-size': {stops: [[1, .2], [15, .5]]},
-                'icon-padding': {stops: [[1, 20], [15, 2]]},
+                // 'icon-padding': {stops: [[1, 20], [15, 2]]},
+                'icon-padding': {stops: [[1, 2], [15, 2]]},
                 // 'icon-opacity': {stops: [[1, .5], [3, 1]]}
             }
         });
@@ -227,6 +235,7 @@ function reset_maps() {
     map.removeImage('shelter');
     map.removeImage('evacuation');
     map.removeImage('crime');
+    map.removeImage('regime');
 
     map.removeSource('data');
 
@@ -298,3 +307,5 @@ $('#map-topic-select,#map-language-select').change(function () {
         map.setFilter('languages', filters);
     }
 });
+
+map.addControl(new mapboxgl.NavigationControl());

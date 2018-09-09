@@ -1,11 +1,13 @@
 __author__ = 'boliangzhang'
 
 import os
+import sys
 import uuid
 import socket
 import subprocess
 import requests
 import urllib.request
+import xml
 import xml.etree.ElementTree as ET
 
 from lorelei_demo.scripts.format_converter.rsd2bio import rsd2bio
@@ -13,11 +15,13 @@ from lorelei_demo.scripts.format_converter.bio2tab import bio2tab
 from lorelei_demo.scripts.format_converter.tab2kg import tab2kg
 from lorelei_demo.scripts.format_converter.laf2tab import laf2tab
 from lorelei_demo.scripts.format_converter.ltf2rsd import ltf2rsd
+from lorelei_demo.scripts.format_converter.ltf2bio import ltf2bio
 from lorelei_demo.scripts.format_converter.ltftab2bio import ltftab2bio
 from lorelei_demo.scripts.format_converter.bio2ltf import bio2ltf
 from lorelei_demo.scripts.format_converter import bio2laf
+from lorelei_demo.scripts.format_converter import rsd2ltf
 
-from lorelei_demo.app import lorelei_demo_dir
+from lorelei_demo.app import lorelei_demo_dir, args
 from lorelei_demo.app.geo_name import GeoName
 from lorelei_demo.app.visualization.edl_err_ana import visualize_single_doc_without_gold
 from lorelei_demo.app.visualization.edl_err_ana import visualize_single_doc_with_gold
@@ -51,7 +55,7 @@ def swagger():
 @bp_api.route("/elisa_ie/status/<identifier>", methods=["GET"])
 def status(identifier):
     """
-    status of ie server
+    ie model status for each language
     """
     # get status
     status = get_status()
@@ -81,7 +85,7 @@ def status(identifier):
 @bp_api.route("/elisa_ie/entity_discovery_and_linking/<identifier>", methods=["POST"])
 def entity_discovery_and_linking(identifier):
     """
-    single document API
+    main entrance of the entity discovery and linking API
     """
     language_code = identifier
 
@@ -98,7 +102,7 @@ def entity_discovery_and_linking(identifier):
     # get text input
     text_input = request.data.decode('utf-8')
 
-    if input_format == 'plain text':
+    if input_format == 'plain_text':
         # run ner
         tab_str = edl_plain_text(language_code, text_input)
 
@@ -108,7 +112,10 @@ def entity_discovery_and_linking(identifier):
             result = tab2kg(tab_str)
         else:
             result = 'Please choose name tagging output format.'
-
+    if input_format == 'ltf':
+        result = edl_ltf(language_code, text_input)
+    if input_format == 'bio':
+        result = edl_bio(language_code, text_input)
     elif input_format == 'NIF':
         result = edl_nif(language_code, text_input)
 
@@ -154,18 +161,18 @@ def entity_linking(identifier):
     return jsonify(linking_result)
 
 
+@bp_api.route("/elisa_ie/entity_linking_bio", methods=["POST"])
+def entity_linking_bio():
+    bio_str = request.form['bio_str']
+    language = request.form['lang']
+    return entity_linking_with_bio(bio_str, language)
+
+
 @bp_api.route("/elisa_ie/entity_linking_amr", methods=["POST"])
 def entity_linking_amr():
     # get amr text input
-    amr_text_input = request.data.decode('utf-8')
-
-    url = 'http://blender02.cs.rpi.edu:3301/linking_amr'
-
-    payload = {'amr_str': amr_text_input}
-
-    r = requests.post(url, data=payload)
-
-    return r.text
+    amr_str = request.form['amr_str']
+    return entity_linking_with_amr(amr_str)
 
 
 @bp_api.route("/elisa_ie/localize/<identifier>", methods=['GET'])
@@ -299,9 +306,82 @@ def get_sample_doc(identifier):
     return jsonify(res)
 
 
+@bp_api.route("/elisa_ie/rsd2ltf", methods=["GET"])
+def rsd_to_ltf():
+    rsd = request.form['rsd']
+    doc_id = request.form['doc_id']
+    seg_option = request.form['seg_option']
+    tok_option = request.form['tok_option']
+
+    ltf_root = rsd2ltf.rsd2ltf(rsd, doc_id, seg_option, tok_option)
+
+    # pretty print xml
+    root_str = ET.tostring(ltf_root, 'utf-8')
+    f_xml = xml.dom.minidom.parseString(root_str)
+    pretty_xml_as_string = f_xml.toprettyxml(encoding="utf-8")
+
+    return pretty_xml_as_string
+
+
 #
 # helper functions
 #
+def edl_ltf(language_code, text_input):
+    #
+    # prepare data
+    #
+    bio_str = ltf2bio(text_input)
+
+    # make temp file for input and output bio
+    input_bio_file = tempfile.mktemp()
+    with open(input_bio_file, 'w', encoding="utf8") as f:
+        f.write(bio_str)
+    output_tab_file = tempfile.mktemp()
+
+    #
+    # run dnn name tagger
+    #
+    ner_bio_result = run_pytorch_ner(
+        language_code, input_bio_file, output_tab_file
+    )
+
+    print('running linking...')
+    try:
+        tab_str = entity_linking_with_bio(ner_bio_result, language_code)
+    except:
+        tab_str = bio2tab(ner_bio_result)
+
+    return tab_str
+
+
+def edl_bio(language_code, text_input):
+    #
+    # prepare data
+    #
+    bio_str = text_input
+
+    # make temp file for input and output bio
+    input_bio_file = tempfile.mktemp()
+    with open(input_bio_file, 'w', encoding="utf8") as f:
+        f.write(bio_str)
+    output_tab_file = tempfile.mktemp()
+
+    #
+    # run dnn name tagger
+    #
+    ner_bio_result = run_pytorch_ner(
+        language_code, input_bio_file, output_tab_file
+    )
+
+    print('running linking...')
+    try:
+        tab_str = entity_linking_with_bio(ner_bio_result, language_code)
+    except:
+        tab_str = bio2tab(ner_bio_result)
+
+    return tab_str
+
+
 def edl_plain_text(language_code, plain_text, to_visualize=False):
     #
     # prepare data
@@ -338,7 +418,11 @@ def edl_plain_text(language_code, plain_text, to_visualize=False):
     print('running linking...')
     try:
         tab_str = entity_linking_with_bio(ner_bio_result, language_code)
-    except:
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        msg = 'unexpected error: %s | %s | %s' % \
+              (exc_type, exc_obj, exc_tb.tb_lineno)
+        print(msg)
         tab_str = bio2tab(ner_bio_result)
 
     if to_visualize:
@@ -443,7 +527,7 @@ def get_status():
     # check model directory to get online and offline languages
     model_dir = os.path.join(lorelei_demo_dir, 'data/name_tagger/pytorch_models')
     languages = [item for item in os.listdir(model_dir) if
-                 item != '.DS_Store']
+                 item not in ['.DS_Store', 'post_processing']]
 
     online_languages = []
     offline_languages = []
@@ -529,97 +613,151 @@ def run_pytorch_ner(language_code, input_file, ouput_file):
         if ner_tab.strip():
             f.write(ner_tab)
 
-    # Uyghur post-processing
-    if language_code == 'ug':
-        print('=> running xiaoman uig post processing...')
-        pp_dir = os.path.join(
-            lorelei_demo_dir,
-            'lorelei_demo/name_tagger/post_processing/xiaoman_pp/il3/'
-        )
-        pp_script = os.path.join(pp_dir, 'post_processing.py')
-        cmd = ['python3', pp_script,
-               ner_bio_file,
-               ouput_file,
-               ouput_file,
-               '--ppsm', os.path.join(pp_dir, 'psm_flat_setE'),
-               '--pgaz', os.path.join(pp_dir, 'high_confidence.gaz'),
-               '--prule', os.path.join(pp_dir, 'il3.rule'),
-               ]
-        print(' '.join(cmd))
-        subprocess.call(cmd)
+    #
+    # post processing
+    #
+    post_processing_script = os.path.join(
+        lorelei_demo_dir,
+        'data/name_tagger/pytorch_models/post_processing/post_processing.py'
+    )
+    if os.path.exists(post_processing_script):
+        try:
+            if language_code == 'mk':
+                cmd = [
+                    'python',
+                    post_processing_script,
+                    ner_bio_file,
+                    ouput_file,
+                    ouput_file,
+                    '--ppsm', os.path.join(lorelei_demo_dir, 'data/name_tagger/pytorch_models/post_processing/data/psm'),
+                    '--psn', os.path.join(lorelei_demo_dir, 'data/name_tagger/pytorch_models/post_processing/data/sn'),
+                    '--pgaz', os.path.join(lorelei_demo_dir, 'data/name_tagger/pytorch_models/post_processing/data/gaz'),
+                    '--prule', os.path.join(lorelei_demo_dir, 'data/name_tagger/pytorch_models/post_processing/data/rule')
+                ]
+                subprocess.call(cmd)
+
+            # # Uyghur post-processing
+            # if language_code == 'ug':
+            #     print('=> running xiaoman uig post processing...')
+            #
+            #     cmd = ['/data/m1/panx2/lib/anaconda3/bin/python',
+            #            '/nas/data/m1/panx2/code/ELISA-IE/post-processing/post_processing.py',
+            #            ner_bio_file,
+            #            ner_tab,
+            #            ouput_file,
+            #            '--ppsm', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/psm_flat_setE',
+            #            '--psn', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/il3.sn.gaz',
+            #            '--pgaz', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/high_confidence.gaz',
+            #            '--prule', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/il3.rule',]
+            #
+            #     print(' '.join(cmd))
+            #     subprocess.call(cmd)
+            # # Macedonian post-processing
+            # elif language_code == 'mk':
+            #     print('=> running xiaoman mk post processing...')
+            #
+            #     cmd = ['/data/m1/panx2/lib/anaconda3/bin/python',
+            #            '/nas/data/m1/panx2/code/ELISA-IE/post-processing/post_processing.py',
+            #            ner_bio_file,
+            #            ner_tab,
+            #            ouput_file
+            #            ]
+            #
+            #     print(' '.join(cmd))
+            #     subprocess.call(cmd)
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            msg = 'unexpected error: %s | %s | %s' % \
+                  (exc_type, exc_obj, exc_tb.tb_lineno)
+            print(msg)
+    else:
+        print('no post processing script found.')
 
     return open(ner_bio_file).read()
 
 
 # run theano tagger
-def run_ner(language_code, input_file, ouput_file):
-    print('=> running theano dnn name tagger...')
-
-    from lorelei_demo.app import models
-    from lorelei_demo.app.model_preload import inference
-
-    if language_code in models:
-        ner_bio_file = tempfile.mktemp()
-
-        f_eval, parameters, mapping = models[language_code]
-        inference(input_file, ner_bio_file, f_eval, parameters, mapping)
-    else:
-        # run with command line
-        tagger_script = os.path.join(
-            lorelei_demo_dir, 'lorelei_demo/name_tagger/theano/wrapper/dnn_tagger.py'
-        )
-
-        model_dir = os.path.join(
-            lorelei_demo_dir, 'data/name_tagger/models/%s/model/' % language_code
-        )
-
-        ner_bio_file = tempfile.mktemp()
-        cmd = ['python3', tagger_script, input_file, ner_bio_file, model_dir,
-               '-b', '--threads', '1']
-
-        print(' '.join(cmd))
-        subprocess.call(cmd)
-
-    # convert bio result to tab
-    ner_tab = bio2tab(open(ner_bio_file, encoding="utf8").read())
-    with open(ouput_file, 'w', encoding="utf8") as f:
-        if ner_tab.strip():
-            f.write(ner_tab)
-
-    # Uyghur post-processing
-    if language_code == 'ug':
-        print('=> running xiaoman uig post processing...')
-        pp_dir = os.path.join(
-            lorelei_demo_dir,
-            'lorelei_demo/name_tagger/post_processing/xiaoman_pp/il3/'
-        )
-        pp_script = os.path.join(pp_dir, 'post_processing.py')
-        cmd = ['python3', pp_script,
-               ner_bio_file,
-               ouput_file,
-               ouput_file,
-               '--ppsm', os.path.join(pp_dir, 'psm_flat_setE'),
-               '--pgaz', os.path.join(pp_dir, 'high_confidence.gaz'),
-               '--prule', os.path.join(pp_dir, 'il3.rule'),
-               ]
-        print(' '.join(cmd))
-        subprocess.call(cmd)
-
-    return open(ner_bio_file).read()
+# def run_ner(language_code, input_file, ouput_file):
+#     print('=> running theano dnn name tagger...')
+#
+#     from lorelei_demo.app import models
+#     from lorelei_demo.app.model_preload import inference
+#
+#     if language_code in models:
+#         ner_bio_file = tempfile.mktemp()
+#
+#         f_eval, parameters, mapping = models[language_code]
+#         inference(input_file, ner_bio_file, f_eval, parameters, mapping)
+#     else:
+#         # run with command line
+#         tagger_script = os.path.join(
+#             lorelei_demo_dir, 'lorelei_demo/name_tagger/theano/wrapper/dnn_tagger.py'
+#         )
+#
+#         model_dir = os.path.join(
+#             lorelei_demo_dir, 'data/name_tagger/models/%s/model/' % language_code
+#         )
+#
+#         ner_bio_file = tempfile.mktemp()
+#         cmd = ['python3', tagger_script, input_file, ner_bio_file, model_dir,
+#                '-b', '--threads', '1']
+#
+#         print(' '.join(cmd))
+#         subprocess.call(cmd)
+#
+#     # convert bio result to tab
+#     ner_tab = bio2tab(open(ner_bio_file, encoding="utf8").read())
+#     with open(ouput_file, 'w', encoding="utf8") as f:
+#         if ner_tab.strip():
+#             f.write(ner_tab)
+#
+#     # Uyghur post-processing
+#     if language_code == 'ug':
+#         print('=> running xiaoman uig post processing...')
+#         pp_dir = os.path.join(
+#             lorelei_demo_dir,
+#             'lorelei_demo/name_tagger/post_processing/xiaoman_pp/il3/'
+#         )
+#         pp_script = os.path.join(pp_dir, 'post_processing.py')
+#         cmd = ['python3', pp_script,
+#                ner_bio_file,
+#                ouput_file,
+#                ouput_file,
+#                '--ppsm', os.path.join(pp_dir, 'psm_flat_setE'),
+#                '--pgaz', os.path.join(pp_dir, 'high_confidence.gaz'),
+#                '--prule', os.path.join(pp_dir, 'il3.rule'),
+#                ]
+#         print(' '.join(cmd))
+#         subprocess.call(cmd)
+#
+#     return open(ner_bio_file).read()
 
 
 def entity_linking_with_query(query, language, type):
     if type:
-        url = 'http://blender02.cs.rpi.edu:3301/linking?mention=%s&lang=%s&type=%s' % (
+        url = 'http://blender02.cs.rpi.edu:2201/linking?mention=%s&lang=%s&type=%s' % (
             urllib.request.quote(query), language, type)
+        blender_url = 'http://blender02.cs.rpi.edu:3300/elisa_ie/entity_linking/%s?query=%s&type=%s' % (
+            urllib.request.quote(query), language, type
+        )
     else:
-        url = 'http://blender02.cs.rpi.edu:3301/linking?mention=%s&lang=%s' % (
+        url = 'http://blender02.cs.rpi.edu:2201/linking?mention=%s&lang=%s' % (
             urllib.request.quote(query), language)
-    try:
-        linking_result = urllib.request.urlopen(url, timeout=5).read()
-    except (urllib.request.URLError, socket.timeout) as e:
-        linking_result = '[]'
-        print(e)
+        blender_url = 'http://blender02.cs.rpi.edu:3300/elisa_ie/entity_linking/%s?query=%s' % (
+            urllib.request.quote(query), language
+        )
+    if args.in_domain:
+        try:
+            linking_result = urllib.request.urlopen(url, timeout=5).read()
+        except (urllib.request.URLError, socket.timeout) as e:
+            linking_result = '[]'
+            print(e)
+    else:
+        try:
+            linking_result = urllib.request.urlopen(blender_url, timeout=5).read()
+        except (urllib.request.URLError, socket.timeout) as e:
+            linking_result = '[]'
+            print(e)
 
     linking_result = json.loads(linking_result)
 
@@ -627,17 +765,45 @@ def entity_linking_with_query(query, language, type):
 
 
 def entity_linking_with_bio(bio_str, language):
-    url = 'http://blender02.cs.rpi.edu:3301/linking_bio'
-    payload = {'bio_str': bio_str, 'lang': language}
-    r = requests.post(url, data=payload)
+    lorelei_kb = True if request.args.get('lorelei_kb') == '1' else False
+
+    if lorelei_kb:
+        if args.in_domain:
+            url = 'http://blender02.cs.rpi.edu:2202/linking_bio'
+        else:
+            url = 'http://blender02.cs.rpi.edu:3300/elisa_ie/entity_linking_bio'
+        payload = {'bio_str': bio_str, 'lang': language}
+        try:
+            r = requests.post(url, data=payload, timeout=20)
+        except (urllib.request.URLError, socket.timeout) as e:
+            r = '[]'
+            print(e)
+    else:
+        if args.in_domain:
+            url = 'http://blender02.cs.rpi.edu:2201/linking_bio'
+        else:
+            url = 'http://blender02.cs.rpi.edu:3300/elisa_ie/entity_linking_bio'
+        payload = {'bio_str': bio_str, 'lang': language}
+        try:
+            r = requests.post(url, data=payload, timeout=20)
+        except (urllib.request.URLError, socket.timeout) as e:
+            r = '[]'
+            print(e)
 
     return r.text
 
 
-def entity_linking_amr(amr_str):
-    url = 'http://blender02.cs.rpi.edu:3301/linking_amr'
+def entity_linking_with_amr(amr_str):
+    if args.in_domain:
+        url = 'http://blender02.cs.rpi.edu:2201/linking_amr'
+    else:
+        url = 'http://blender02.cs.rpi.edu:3300/elisa_ie/entity_linking_amr'
     payload = {'amr_str': amr_str}
-    r = requests.post(url, data=payload)
+    try:
+        r = requests.post(url, data=payload, timeout=5)
+    except (urllib.request.URLError, socket.timeout) as e:
+        r = '[]'
+        print(e)
 
     return r.text
 
