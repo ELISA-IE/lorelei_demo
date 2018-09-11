@@ -1,9 +1,0 @@
-Deity
-Family
-Organisation
-Person
-EthnicGroup
-Language
-Name
-Place
-#Work

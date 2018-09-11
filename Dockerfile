@@ -41,6 +41,8 @@ CMD ["/usr/src/app/lorelei_demo/run.py"]
 #
 # docker build -t elisarpi/elisa-ie .
 # docker push elisarpi/elisa-ie
+# docker run -p <HOSTPORT>:3300 -v <HOST_PRETRAINED_MODELS>:/usr/src/app/data/name_tagger/pytorch_models -ti elisarpi/elisa-ie /usr/src/app/lorelei_demo/run.py --preload
+
 
 #
 # NER model overview:

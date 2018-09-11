@@ -7,8 +7,8 @@ data/app/elisa_ie
 lorelei_demo/scripts
 lorelei_demo/name_tagger/dnn_pytorch/
 
-# ignore transliteration data
-lorelei_demo/transliteration/data
+# ignore transliteration.bk data
+#lorelei_demo/transliteration/data
 lorelei_demo/scripts/.git
 lorelei_demo/name_tagger/theano/.git
 
