@@ -46,12 +46,14 @@ os.environ["THEANO_FLAGS"] = "optimizer=fast_compile,floatX=float32"
 #
 # preload name tagger models
 #
-from lorelei_demo.app.model_preload import pytorch_preload
+from lorelei_demo.app.model_preload import pytorch_preload, transliteration_preload
 from lorelei_demo.app.api import get_status
 if args.preload:
     models = pytorch_preload(get_status())
+    transliteration_models = transliteration_preload()
 else:
     models = {}
+    transliteration_models = {}
 
 #
 # register blueprint modules

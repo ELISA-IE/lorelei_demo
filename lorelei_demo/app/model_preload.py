@@ -16,13 +16,14 @@ sys.path.insert(0, theano_tagger_path)
 sys.path.insert(0, pytorch_tagger_path)
 
 from lorelei_demo.name_tagger.theano.loader import prepare_sentence, load_sentences
-from lorelei_demo.name_tagger.theano.utils import create_input, iobes_iob, zero_digits
-from lorelei_demo.name_tagger.theano.model import Model
+from lorelei_demo.name_tagger.theano.utils import create_input, iobes_iob
 from lorelei_demo.name_tagger.theano.external_feats.generate_features import generate_features
 
 from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.nn import SeqLabeling
 from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.loader import prepare_dataset, load_sentences
 from lorelei_demo.name_tagger.dnn_pytorch.dnn_pytorch.seq_labeling.utils import create_input, iobes_iob
+
+from lorelei_demo.transliteration.transliteration import load_model
 
 from lorelei_demo.app import lorelei_demo_dir
 
@@ -154,67 +155,94 @@ def pytorch_tag(input, output, model, parameters, mappings):
         (end - since), 2))
 
 
+def transliteration_preload():
+    preloaded_models = dict()
+    model_dir = os.path.join(
+        lorelei_demo_dir, 'lorelei_demo/transliteration/data/model/'
+    )
+    for lang in os.listdir(model_dir):
+        preloaded_models[lang] = trans_preload(lang)
+
+    return preloaded_models
+
+
+def trans_preload(lang):
+    model_dir = os.path.join(
+        lorelei_demo_dir, 'lorelei_demo/transliteration/data/model/', lang
+    )
+    if not os.path.exists(model_dir):
+        return None
+    for file in os.listdir(model_dir):
+        if not file.endswith('.model.txt'):
+            continue
+        model_path = os.path.join(model_dir, file)
+        candidates, pair_trans_prob, pair_freq = load_model(
+            model_path, ignore_case=True
+        )
+        return (candidates, pair_trans_prob, pair_freq)
+
+
 #
 # theano taggers
 #
-def preload_models():
-    status = get_status()
-
-    models = {}
-
-    for lang_code, s in list(status.items())[:]:
-        # if lang_code not in ['ar', 'am', 'fa', 'ha', 'hu', 'so', 'tr', 'uz', 'vi', 'yo', 'ti', 'om']:
-        #     continue
-        if s[1] == 'online':
-            model_dir = os.path.join(
-                lorelei_demo_dir,
-                'data/name_tagger/models/%s/model/' % lang_code
-            )
-
-            # Check parameters validity
-            assert os.path.isdir(model_dir)
-
-            # Load existing model
-            print("=> Preloading model for %s" % lang_code)
-            model = Model(model_path=model_dir)
-            parameters = model.parameters
-
-            # compatible to previously trained model
-            if 'feat_dim' not in parameters: parameters['feat_dim'] = 0
-            if 'comb_method' not in parameters: parameters['comb_method'] = ''
-            if 'upenn_stem' not in parameters: parameters['upenn_stem'] = ''
-            if 'pos_model' not in parameters: parameters['pos_model'] = ''
-            if 'brown_cluster' not in parameters: parameters[
-                'brown_cluster'] = ''
-            if 'ying_stem' not in parameters: parameters['ying_stem'] = ''
-            if 'gaz' not in parameters: parameters['gaz'] = ''
-            if 'conv' not in parameters: parameters['conv'] = 0
-
-            # Load reverse mappings
-            word_to_id, char_to_id, tag_to_id = [
-                {v: k for k, v in x.items()}
-                for x in [model.id_to_word, model.id_to_char, model.id_to_tag]
-                ]
-            feat_to_id_list = [
-                {v: k for k, v in id_to_feat.items()}
-                for id_to_feat in model.id_to_feat_list
-                ]
-
-            # Load the model
-            _, f_eval = model.build(training=False, **parameters)
-            model.reload()
-
-            mapping = {'word_to_id': word_to_id,
-                       'char_to_id': char_to_id,
-                       'tag_to_id': tag_to_id,
-                       'id_to_tag': model.id_to_tag,
-                       'feat_to_id_list': feat_to_id_list}
-
-            models[lang_code] = (f_eval, parameters, mapping)
-
-    print('%d models are preloaded:' % len(models))
-    print(', '.join(list(models.keys())))
-    return models
+# def preload_models():
+#     status = get_status()
+#
+#     models = {}
+#
+#     for lang_code, s in list(status.items())[:]:
+#         # if lang_code not in ['ar', 'am', 'fa', 'ha', 'hu', 'so', 'tr', 'uz', 'vi', 'yo', 'ti', 'om']:
+#         #     continue
+#         if s[1] == 'online':
+#             model_dir = os.path.join(
+#                 lorelei_demo_dir,
+#                 'data/name_tagger/models/%s/model/' % lang_code
+#             )
+#
+#             # Check parameters validity
+#             assert os.path.isdir(model_dir)
+#
+#             # Load existing model
+#             print("=> Preloading model for %s" % lang_code)
+#             model = Model(model_path=model_dir)
+#             parameters = model.parameters
+#
+#             # compatible to previously trained model
+#             if 'feat_dim' not in parameters: parameters['feat_dim'] = 0
+#             if 'comb_method' not in parameters: parameters['comb_method'] = ''
+#             if 'upenn_stem' not in parameters: parameters['upenn_stem'] = ''
+#             if 'pos_model' not in parameters: parameters['pos_model'] = ''
+#             if 'brown_cluster' not in parameters: parameters[
+#                 'brown_cluster'] = ''
+#             if 'ying_stem' not in parameters: parameters['ying_stem'] = ''
+#             if 'gaz' not in parameters: parameters['gaz'] = ''
+#             if 'conv' not in parameters: parameters['conv'] = 0
+#
+#             # Load reverse mappings
+#             word_to_id, char_to_id, tag_to_id = [
+#                 {v: k for k, v in x.items()}
+#                 for x in [model.id_to_word, model.id_to_char, model.id_to_tag]
+#                 ]
+#             feat_to_id_list = [
+#                 {v: k for k, v in id_to_feat.items()}
+#                 for id_to_feat in model.id_to_feat_list
+#                 ]
+#
+#             # Load the model
+#             _, f_eval = model.build(training=False, **parameters)
+#             model.reload()
+#
+#             mapping = {'word_to_id': word_to_id,
+#                        'char_to_id': char_to_id,
+#                        'tag_to_id': tag_to_id,
+#                        'id_to_tag': model.id_to_tag,
+#                        'feat_to_id_list': feat_to_id_list}
+#
+#             models[lang_code] = (f_eval, parameters, mapping)
+#
+#     print('%d models are preloaded:' % len(models))
+#     print(', '.join(list(models.keys())))
+#     return models
 
 
 def inference(input, output, f_eval, parameters, mappping):

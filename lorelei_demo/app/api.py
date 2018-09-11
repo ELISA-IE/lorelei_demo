@@ -133,22 +133,45 @@ def name_translation(identifier):
 def name_transliteration(identifier):
     name = request.args.get('name')
 
-    if len(name) > 15:
-        transliteration_result = '[]'
+    # if len(name) > 15:
+    #     transliteration_result = '[]'
+    # else:
+    #     # generate transliteration.bk
+    #     url = 'http://0.0.0.0:12306/trans/%s/%s?number=5' % (
+    #         identifier, urllib.request.quote(name)
+    #     )
+    #     try:
+    #         transliteration_result = urllib.request.urlopen(url, timeout=5).read()
+    #     except (urllib.request.URLError, socket.timeout) as e:
+    #         transliteration_result = '[]'
+    #         print(e)
+    #
+    # transliteration_result = json.loads(transliteration_result)
+
+    from lorelei_demo.app import transliteration_models
+    from lorelei_demo.transliteration.transliteration import transliterate
+    from lorelei_demo.app.model_preload import trans_preload
+
+    error_msg = {'error': 'transliteration only supports languages: %s' % \
+                          ' '.join(transliteration_models.keys())}
+    if not transliteration_models:
+        model = trans_preload(identifier)
+        if not model:
+            rtn = error_msg
+        else:
+            candidates, pair_trans_prob, pair_freq = model
+            rtn = transliterate(
+                name, candidates, pair_trans_prob, pair_freq, 10
+            )
+    elif identifier not in transliteration_models:
+        rtn = error_msg
     else:
-        # generate transliteration
-        url = 'http://0.0.0.0:12306/trans/%s/%s?number=5' % (
-            identifier, urllib.request.quote(name)
+        candidates, pair_trans_prob, pair_freq = transliteration_models[identifier]
+        rtn = transliterate(
+            name, candidates, pair_trans_prob, pair_freq, 10
         )
-        try:
-            transliteration_result = urllib.request.urlopen(url, timeout=5).read()
-        except (urllib.request.URLError, socket.timeout) as e:
-            transliteration_result = '[]'
-            print(e)
 
-    transliteration_result = json.loads(transliteration_result)
-
-    return jsonify(transliteration_result)
+    return jsonify(rtn)
 
 
 @bp_api.route("/elisa_ie/entity_linking/<identifier>", methods=["GET"])
@@ -636,35 +659,35 @@ def run_pytorch_ner(language_code, input_file, ouput_file):
                 ]
                 subprocess.call(cmd)
 
-            # # Uyghur post-processing
-            # if language_code == 'ug':
-            #     print('=> running xiaoman uig post processing...')
-            #
-            #     cmd = ['/data/m1/panx2/lib/anaconda3/bin/python',
-            #            '/nas/data/m1/panx2/code/ELISA-IE/post-processing/post_processing.py',
-            #            ner_bio_file,
-            #            ner_tab,
-            #            ouput_file,
-            #            '--ppsm', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/psm_flat_setE',
-            #            '--psn', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/il3.sn.gaz',
-            #            '--pgaz', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/high_confidence.gaz',
-            #            '--prule', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/il3.rule',]
-            #
-            #     print(' '.join(cmd))
-            #     subprocess.call(cmd)
-            # # Macedonian post-processing
-            # elif language_code == 'mk':
-            #     print('=> running xiaoman mk post processing...')
-            #
-            #     cmd = ['/data/m1/panx2/lib/anaconda3/bin/python',
-            #            '/nas/data/m1/panx2/code/ELISA-IE/post-processing/post_processing.py',
-            #            ner_bio_file,
-            #            ner_tab,
-            #            ouput_file
-            #            ]
-            #
-            #     print(' '.join(cmd))
-            #     subprocess.call(cmd)
+                # # Uyghur post-processing
+                # if language_code == 'ug':
+                #     print('=> running xiaoman uig post processing...')
+                #
+                #     cmd = ['/data/m1/panx2/lib/anaconda3/bin/python',
+                #            '/nas/data/m1/panx2/code/ELISA-IE/post-processing/post_processing.py',
+                #            ner_bio_file,
+                #            ner_tab,
+                #            ouput_file,
+                #            '--ppsm', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/psm_flat_setE',
+                #            '--psn', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/il3.sn.gaz',
+                #            '--pgaz', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/high_confidence.gaz',
+                #            '--prule', '/nas/data/m1/panx2/workspace/lorelei/data/dict/il3/il3.rule',]
+                #
+                #     print(' '.join(cmd))
+                #     subprocess.call(cmd)
+                # # Macedonian post-processing
+                # elif language_code == 'mk':
+                #     print('=> running xiaoman mk post processing...')
+                #
+                #     cmd = ['/data/m1/panx2/lib/anaconda3/bin/python',
+                #            '/nas/data/m1/panx2/code/ELISA-IE/post-processing/post_processing.py',
+                #            ner_bio_file,
+                #            ner_tab,
+                #            ouput_file
+                #            ]
+                #
+                #     print(' '.join(cmd))
+                #     subprocess.call(cmd)
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             msg = 'unexpected error: %s | %s | %s' % \
